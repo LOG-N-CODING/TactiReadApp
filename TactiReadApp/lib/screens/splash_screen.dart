@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/bluetooth_permission_service.dart';
+import '../services/user_session_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,14 +19,30 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     // 앱 로딩 시뮬레이션
     await Future.delayed(const Duration(seconds: 2));
-    
+
     if (mounted) {
       // 블루투스 권한 요청
       await BluetoothPermissionService.requestBluetoothPermissions(context);
-      
+
       if (mounted) {
-        // 권한이 있든 없든 다음 화면으로 이동 (사용자가 나중에 설정에서 변경 가능)
-        Navigator.pushReplacementNamed(context, '/device-pairing');
+        // 인증 상태 확인
+        bool isLoggedIn = await UserSessionService.isLoggedIn();
+
+        if (isLoggedIn) {
+          // 로그인된 상태 - 튜토리얼 완료 여부 확인
+          bool tutorialCompleted = await UserSessionService.isTutorialCompleted();
+
+          if (tutorialCompleted) {
+            // 튜토리얼 완료 - 홈 화면으로
+            Navigator.pushReplacementNamed(context, '/home');
+          } else {
+            // 튜토리얼 미완료 - 튜토리얼 화면으로
+            Navigator.pushReplacementNamed(context, '/tutorial');
+          }
+        } else {
+          // 로그인되지 않은 상태 - 환영 화면으로
+          Navigator.pushReplacementNamed(context, '/welcome');
+        }
       }
     }
   }
@@ -53,48 +70,31 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.touch_app,
-                size: 60,
-                color: Color(0xFF1976D2),
-              ),
+              child: const Icon(Icons.touch_app, size: 60, color: Color(0xFF1976D2)),
             ),
             const SizedBox(height: 32),
-            
+
             // 앱 이름
             const Text(
               'TactiRead',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 8),
-            
+
             // 앱 설명
             const Text(
               '점자 디스플레이를 위한 스마트 리더',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white70,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 48),
-            
+
             // 로딩 인디케이터
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
             const SizedBox(height: 16),
-            
-            const Text(
-              '초기화 중...',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
-            ),
+
+            const Text('초기화 중...', style: TextStyle(fontSize: 14, color: Colors.white70)),
           ],
         ),
       ),

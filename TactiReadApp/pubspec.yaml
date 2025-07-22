@@ -42,8 +42,41 @@ dependencies:
   # File picker for file upload
   file_picker: ^8.0.7
   
+  # Path provider for local storage
+  path_provider: ^2.1.4
+  
   # URL launcher for external links
   url_launcher: ^6.3.0
+  
+  # PDF processing
+  pdf: ^3.10.8
+  printing: ^5.12.0
+  
+  # Image processing
+  image: ^4.1.7
+  
+  # Text extraction from PDF
+  syncfusion_flutter_pdf: ^26.2.14
+  
+  # OCR for image text extraction  
+  google_mlkit_text_recognition: ^0.13.1
+  
+  # Database
+  sqflite: ^2.3.3
+  path: ^1.8.3
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # State management
+  provider: ^6.1.2
+  
+  # Speech recognition and TTS
+  stts: ^1.2.4
+  flutter_tts: ^4.0.2
+  
+  # Crypto for password hashing
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:

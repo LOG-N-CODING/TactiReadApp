@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReadingSpeedControlScreen extends StatefulWidget {
   const ReadingSpeedControlScreen({super.key});
 
   @override
-  State<ReadingSpeedControlScreen> createState() =>
-      _ReadingSpeedControlScreenState();
+  State<ReadingSpeedControlScreen> createState() => _ReadingSpeedControlScreenState();
 }
 
 class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
@@ -21,10 +21,33 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
     'Very Fast': 0.9,
   };
 
+  @override
+  void initState() {
+    super.initState();
+    _loadReadingSpeed();
+  }
+
+  // SharedPreferences에서 읽기 속도 로드
+  Future<void> _loadReadingSpeed() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _currentSpeed = prefs.getDouble('reading_speed') ?? 0.5;
+    });
+  }
+
+  // SharedPreferences에 읽기 속도 저장
+  Future<void> _saveReadingSpeed(double speed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('reading_speed', speed);
+  }
+
   void _onSpeedChanged(double value) {
     setState(() {
       _currentSpeed = value;
     });
+
+    // SharedPreferences에 저장
+    _saveReadingSpeed(value);
 
     // 햅틱 피드백
     HapticFeedback.selectionClick();
@@ -34,6 +57,9 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
     setState(() {
       _currentSpeed = speed;
     });
+
+    // SharedPreferences에 저장
+    _saveReadingSpeed(speed);
 
     // 햅틱 피드백
     HapticFeedback.lightImpact();
@@ -94,19 +120,14 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                       inactiveTrackColor: const Color(0xFFE6E6E6),
                       trackHeight: 6,
                       thumbColor: const Color(0xFF4D4D4D),
-                      thumbShape: const RoundSliderThumbShape(
-                        enabledThumbRadius: 12,
-                      ),
-                      overlayShape: const RoundSliderOverlayShape(
-                        overlayRadius: 20,
-                      ),
+                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
                       overlayColor: const Color(0xFF4D4D4D).withOpacity(0.1),
                       trackShape: const RoundedRectSliderTrackShape(),
                     ),
                     child: Semantics(
                       label: 'Reading speed control',
-                      value:
-                          '${(_currentSpeed * 100).round()} percent, ${_getSpeedDescription()}',
+                      value: '${(_currentSpeed * 100).round()} percent, ${_getSpeedDescription()}',
                       child: Slider(
                         value: _currentSpeed,
                         onChanged: _onSpeedChanged,
@@ -116,9 +137,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 16,
-                  ), // Adjust spacing for better alignment
+                  const SizedBox(height: 16), // Adjust spacing for better alignment
                   // Slow and Fast Labels
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,8 +231,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                   spacing: 8,
                   runSpacing: 8,
                   children: _speedPresets.entries.map((entry) {
-                    bool isSelected =
-                        (_currentSpeed - entry.value).abs() < 0.05;
+                    bool isSelected = (_currentSpeed - entry.value).abs() < 0.05;
                     return Semantics(
                       label: '${entry.key} reading speed preset',
                       value: isSelected ? 'Selected' : 'Not selected',
@@ -222,17 +240,12 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                       child: GestureDetector(
                         onTap: () => _setPresetSpeed(entry.value),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
                             color: isSelected ? Colors.black : Colors.grey[200],
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected
-                                  ? Colors.black
-                                  : Colors.grey[400]!,
+                              color: isSelected ? Colors.black : Colors.grey[400]!,
                               width: 1,
                             ),
                           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../widgets/bottom_navigation_component.dart';
 
 class HelpScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 65),
-                    
+
                     // Help & Support 제목
                     const Text(
                       'Help & Support',
@@ -38,39 +39,33 @@ class _HelpScreenState extends State<HelpScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     const SizedBox(height: 98),
-                    
+
                     // 검색바
                     _buildSearchBar(),
-                    
+
                     const SizedBox(height: 100),
-                    
+
                     // Expandable FAQ 버튼
-                    _buildSectionButton(
-                      'Expandable FAQ',
-                      onTap: () => _navigateToFAQ(),
-                    ),
-                    
+                    _buildSectionButton('Expandable FAQ', onTap: () => _navigateToFAQ()),
+
                     const SizedBox(height: 22),
-                    
+
                     // Contact Support 섹션
                     _buildContactSupportSection(),
-                    
+
                     const SizedBox(height: 152),
-                    
+
                     // Community resources 버튼
-                    _buildSectionButton(
-                      'Community resources',
-                      onTap: () => _navigateToCommunity(),
-                    ),
-                    
+                    _buildSectionButton('Community resources', onTap: () => _navigateToCommunity()),
+
                     const SizedBox(height: 30),
                   ],
                 ),
               ),
             ),
-            
+
             // Bottom Navigation
             const BottomNavigationComponent(currentRoute: '/help'),
           ],
@@ -91,14 +86,10 @@ class _HelpScreenState extends State<HelpScreen> {
       child: Row(
         children: [
           // 검색 아이콘
-          const Icon(
-            Icons.search,
-            size: 28,
-            color: Color(0x993C3C43),
-          ),
-          
+          const Icon(Icons.search, size: 28, color: Color(0x993C3C43)),
+
           const SizedBox(width: 8),
-          
+
           // 검색 입력 필드
           Expanded(
             child: TextField(
@@ -123,9 +114,9 @@ class _HelpScreenState extends State<HelpScreen> {
               onSubmitted: (value) => _performSearch(value),
             ),
           ),
-          
+
           const SizedBox(width: 8),
-          
+
           // 마이크 아이콘
           GestureDetector(
             onTap: () => _startVoiceSearch(),
@@ -136,11 +127,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(
-                Icons.mic,
-                size: 16,
-                color: Colors.black,
-              ),
+              child: const Icon(Icons.mic, size: 16, color: Colors.black),
             ),
           ),
         ],
@@ -179,28 +166,21 @@ class _HelpScreenState extends State<HelpScreen> {
     return Column(
       children: [
         // Contact Support 헤더
-        _buildSectionButton(
-          'Contact Support',
-          onTap: () {},
-        ),
-        
+        _buildSectionButton('Contact Support', onTap: () {}),
+
         const SizedBox(height: 8),
-        
+
         // Call 버튼
         _buildContactButton(
           icon: Icons.phone_outlined,
           label: 'Call',
           onTap: () => _makePhoneCall(),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Email 버튼
-        _buildContactButton(
-          icon: Icons.email_outlined,
-          label: 'Email',
-          onTap: () => _sendEmail(),
-        ),
+        _buildContactButton(icon: Icons.email_outlined, label: 'Email', onTap: () => _sendEmail()),
       ],
     );
   }
@@ -216,11 +196,7 @@ class _HelpScreenState extends State<HelpScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 24,
-              color: Colors.black,
-            ),
+            Icon(icon, size: 24, color: Colors.black),
             const SizedBox(width: 12),
             Text(
               label,
@@ -263,12 +239,7 @@ class _HelpScreenState extends State<HelpScreen> {
 
   // FAQ 페이지로 이동
   void _navigateToFAQ() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const FAQScreen(),
-      ),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const FAQScreen()));
   }
 
   // 커뮤니티 리소스 페이지로 이동
@@ -289,12 +260,9 @@ class _HelpScreenState extends State<HelpScreen> {
       await launchUrl(phoneUri);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('전화를 걸 수 없습니다.'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('전화를 걸 수 없습니다.'), backgroundColor: Colors.red));
       }
     }
   }
@@ -311,10 +279,7 @@ class _HelpScreenState extends State<HelpScreen> {
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('이메일 앱을 열 수 없습니다.'),
-            backgroundColor: Colors.red,
-          ),
+          const SnackBar(content: Text('이메일 앱을 열 수 없습니다.'), backgroundColor: Colors.red),
         );
       }
     }
@@ -337,16 +302,9 @@ class FAQScreen extends StatefulWidget {
 
 class _FAQScreenState extends State<FAQScreen> {
   int _selectedCategoryIndex = 0;
-  
-  final List<String> _categories = [
-    '시작하기',
-    '문서 업로드',
-    '점자 읽기',
-    '디바이스 연결',
-    '설정',
-    '문제 해결',
-  ];
-  
+
+  final List<String> _categories = ['시작하기', '문서 업로드', '점자 읽기', '디바이스 연결', '설정', '문제 해결'];
+
   final Map<String, List<Map<String, String>>> _helpContent = {
     '시작하기': [
       {
@@ -355,7 +313,8 @@ class _FAQScreenState extends State<FAQScreen> {
       },
       {
         'question': '처음 사용할 때 무엇을 해야 하나요?',
-        'answer': '1. 접근성 설정을 확인하세요\n2. 점자 디스플레이를 연결하세요\n3. 첫 번째 문서를 업로드해보세요\n4. 튜토리얼을 통해 기능을 익혀보세요',
+        'answer':
+            '1. 접근성 설정을 확인하세요\n2. 점자 디스플레이를 연결하세요\n3. 첫 번째 문서를 업로드해보세요\n4. 튜토리얼을 통해 기능을 익혀보세요',
       },
       {
         'question': '어떤 파일 형식을 지원하나요?',
@@ -365,7 +324,8 @@ class _FAQScreenState extends State<FAQScreen> {
     '문서 업로드': [
       {
         'question': '문서를 어떻게 업로드하나요?',
-        'answer': '1. 홈 화면의 "문서 추가" 버튼을 누르세요\n2. "파일에서 선택", "카메라로 촬영", "웹에서 가져오기" 중 선택하세요\n3. 파일을 선택하면 자동으로 점자로 변환됩니다',
+        'answer':
+            '1. 홈 화면의 "문서 추가" 버튼을 누르세요\n2. "파일에서 선택", "카메라로 촬영", "웹에서 가져오기" 중 선택하세요\n3. 파일을 선택하면 자동으로 점자로 변환됩니다',
       },
       {
         'question': '카메라로 문서를 촬영할 수 있나요?',
@@ -397,7 +357,8 @@ class _FAQScreenState extends State<FAQScreen> {
       },
       {
         'question': '디바이스 연결이 안 될 때는?',
-        'answer': '1. 점자 디스플레이가 페어링 모드인지 확인하세요\n2. 블루투스를 껐다가 다시 켜보세요\n3. 앱에서 새로고침을 눌러보세요\n4. 디바이스를 재시작해보세요',
+        'answer':
+            '1. 점자 디스플레이가 페어링 모드인지 확인하세요\n2. 블루투스를 껐다가 다시 켜보세요\n3. 앱에서 새로고침을 눌러보세요\n4. 디바이스를 재시작해보세요',
       },
       {
         'question': '배터리 상태를 확인할 수 있나요?',
@@ -429,7 +390,8 @@ class _FAQScreenState extends State<FAQScreen> {
       },
       {
         'question': '문서 변환이 실패해요',
-        'answer': '1. 파일 형식이 지원되는지 확인하세요\n2. 파일 크기가 너무 크지 않은지 확인하세요\n3. 인터넷 연결을 확인하세요\n4. 잠시 후 다시 시도해보세요',
+        'answer':
+            '1. 파일 형식이 지원되는지 확인하세요\n2. 파일 크기가 너무 크지 않은지 확인하세요\n3. 인터넷 연결을 확인하세요\n4. 잠시 후 다시 시도해보세요',
       },
     ],
   };
@@ -481,7 +443,7 @@ class _FAQScreenState extends State<FAQScreen> {
                     },
                   ),
                 ),
-                
+
                 // 내용 영역
                 Expanded(
                   child: Column(
@@ -499,7 +461,7 @@ class _FAQScreenState extends State<FAQScreen> {
                           ),
                         ),
                       ),
-                      
+
                       // FAQ 목록
                       Expanded(
                         child: ListView.builder(
@@ -517,7 +479,7 @@ class _FAQScreenState extends State<FAQScreen> {
               ],
             ),
           ),
-          
+
           // Bottom Navigation
           const BottomNavigationComponent(currentRoute: '/help'),
         ],
@@ -529,25 +491,13 @@ class _FAQScreenState extends State<FAQScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
-        title: Text(
-          question,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
+        title: Text(question, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                answer,
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  height: 1.5,
-                ),
-              ),
+              child: Text(answer, style: TextStyle(color: Colors.grey.shade700, height: 1.5)),
             ),
           ),
         ],

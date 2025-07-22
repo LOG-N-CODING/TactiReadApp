@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/auth_service.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({super.key});
@@ -9,6 +10,8 @@ class ProfileSettingsScreen extends StatefulWidget {
 }
 
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+  final AuthService _authService = AuthService();
+
   void _updateProfile() {
     HapticFeedback.lightImpact();
     Navigator.pushNamed(context, '/update-profile');
@@ -21,28 +24,66 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            'Delete Account',
-            style: TextStyle(color: Colors.red),
-          ),
+          title: const Text('Delete Account', style: TextStyle(color: Colors.red)),
           content: const Text(
             'Are you sure you want to delete your account? This action cannot be undone.',
           ),
           actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Account deletion would be processed here.'),
-                    backgroundColor: Colors.red,
-                    duration: Duration(seconds: 2),
-                  ),
+
+                // 로딩 다이얼로그 표시
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return const Center(child: CircularProgressIndicator());
+                  },
                 );
+
+                try {
+                  AuthResult result = await _authService.deleteAccount();
+
+                  if (mounted) {
+                    Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
+
+                    if (result.success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(result.message),
+                          backgroundColor: Colors.green,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+
+                      // 로그인 화면으로 이동
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/sign_in', (Route<dynamic> route) => false);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(result.message),
+                          backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 3),
+                        ),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('계정 삭제 중 오류가 발생했습니다.'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
               },
               style: TextButton.styleFrom(foregroundColor: Colors.red),
               child: const Text('Delete'),
@@ -63,17 +104,39 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           title: const Text('Logout'),
           content: const Text('Are you sure you want to logout?'),
           actions: [
+            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/sign_in',
-                  (Route<dynamic> route) => false,
-                );
+
+                try {
+                  await _authService.logout();
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('로그아웃되었습니다.'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+
+                    // 로그인 화면으로 이동
+                    Navigator.of(
+                      context,
+                    ).pushNamedAndRemoveUntil('/sign_in', (Route<dynamic> route) => false);
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('로그아웃 중 오류가 발생했습니다.'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                }
               },
               child: const Text('Logout'),
             ),
@@ -128,9 +191,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     borderRadius: BorderRadius.circular(8),
                     onTap: _updateProfile,
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ), // 60 - 40 = 20
+                      padding: EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -166,9 +227,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     borderRadius: BorderRadius.circular(8),
                     onTap: _deleteAccount,
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ), // 60 - 40 = 20
+                      padding: EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -204,9 +263,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     borderRadius: BorderRadius.circular(8),
                     onTap: _logout,
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20,
-                      ), // 60 - 40 = 20
+                      padding: EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(

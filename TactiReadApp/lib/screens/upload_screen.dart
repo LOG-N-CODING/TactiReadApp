@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../widgets/bottom_navigation_component.dart';
+import '../services/file_upload_service.dart';
+import '../services/user_session_service.dart';
+import '../database/database_helper.dart';
+import '../database/models/document_model.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -15,6 +19,10 @@ class _UploadScreenState extends State<UploadScreen> {
   String fileType = 'PNG';
   String? filePath;
   int? fileSize;
+  String selectedProcessingType = 'display_as_is'; // 기본값: display as is
+
+  final FileUploadService _fileUploadService = FileUploadService();
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   Future<void> _uploadFile() async {
     try {
@@ -26,7 +34,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
       if (result != null && result.files.single.path != null) {
         PlatformFile file = result.files.first;
-        
+
         setState(() {
           isFileUploaded = true;
           uploadedFileName = file.name;
@@ -34,11 +42,11 @@ class _UploadScreenState extends State<UploadScreen> {
           filePath = file.path;
           fileSize = file.size;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('파일 "${file.name}"이 성공적으로 선택되었습니다!'),
-            backgroundColor: Colors.green,
+            content: Text('파일 "${file.name}"이 선택되었습니다. 처리 방식을 선택해주세요.'),
+            backgroundColor: Colors.blue,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -54,19 +62,68 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  Future<void> _uploadFromDevice() async {
-    await _uploadFile();
+  // "display as is" 처리 및 저장
+  Future<void> _processDisplayAsIs() async {
+    await _saveFileToDatabase('display_as_is');
   }
 
-  Future<void> _importFromCloud() async {
-    // 클라우드 연동 기능은 향후 구현
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('클라우드 연동 기능은 준비 중입니다.'),
-        backgroundColor: Colors.orange,
-        duration: Duration(seconds: 2),
-      ),
-    );
+  // "extract text" 처리 및 저장
+  Future<void> _processExtractText() async {
+    await _saveFileToDatabase('extract_text');
+  }
+
+  // 파일을 데이터베이스에 저장
+  Future<void> _saveFileToDatabase(String processingType) async {
+    if (filePath == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('파일을 먼저 선택해주세요.'), backgroundColor: Colors.red));
+      return;
+    }
+
+    try {
+      // 현재 사용자 확인
+      final currentUser = await UserSessionService.getCurrentUser();
+      if (currentUser == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다.'), backgroundColor: Colors.red));
+        return;
+      }
+
+      // FileUploadService를 사용하여 실제 파일 저장
+      FileUploadResult uploadResult = await _fileUploadService.pickAndUploadFile();
+
+      if (uploadResult.success && uploadResult.document != null) {
+        // processing_type 업데이트
+        Document updatedDocument = uploadResult.document!.copyWith(processingType: processingType);
+
+        // 데이터베이스 업데이트
+        await _databaseHelper.updateDocument(updatedDocument);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                processingType == 'display_as_is'
+                    ? '파일이 원본 형태로 저장되었습니다.'
+                    : '파일이 텍스트 추출 모드로 저장되었습니다.',
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // 홈 화면으로 이동
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('파일 저장 중 오류가 발생했습니다: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   @override
@@ -82,7 +139,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 144),
-                    
+
                     // File Upload Section
                     GestureDetector(
                       onTap: _uploadFile,
@@ -124,9 +181,9 @@ class _UploadScreenState extends State<UploadScreen> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 36),
-                    
+
                     // File Details Box (only show when file is uploaded)
                     if (isFileUploaded) ...[
                       Container(
@@ -152,14 +209,10 @@ class _UploadScreenState extends State<UploadScreen> {
                                       border: Border.all(color: const Color(0xFFD3D3D3)),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      size: 14,
-                                      color: Colors.green,
-                                    ),
+                                    child: const Icon(Icons.check, size: 14, color: Colors.green),
                                   ),
                                   const SizedBox(width: 12),
-                                  
+
                                   // File name and size
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +241,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                     ],
                                   ),
                                   const SizedBox(width: 12),
-                                  
+
                                   // File type
                                   Text(
                                     fileType,
@@ -202,7 +255,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                 ],
                               ),
                             ),
-                            
+
                             // Middle section with options
                             Padding(
                               padding: const EdgeInsets.fromLTRB(56, 0, 24, 24),
@@ -221,9 +274,9 @@ class _UploadScreenState extends State<UploadScreen> {
                       ),
                       const SizedBox(height: 20),
                     ],
-                    
+
                     const Spacer(),
-                    
+
                     // Bottom buttons
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -231,7 +284,7 @@ class _UploadScreenState extends State<UploadScreen> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              onTap: _uploadFromDevice,
+                              onTap: isFileUploaded ? _processDisplayAsIs : _uploadFile,
                               child: Container(
                                 height: 44,
                                 decoration: BoxDecoration(
@@ -241,7 +294,7 @@ class _UploadScreenState extends State<UploadScreen> {
                                 ),
                                 child: const Center(
                                   child: Text(
-                                    'Upload from Device',
+                                    'display as is',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
@@ -256,21 +309,21 @@ class _UploadScreenState extends State<UploadScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: GestureDetector(
-                              onTap: _importFromCloud,
+                              onTap: isFileUploaded ? _processExtractText : null,
                               child: Container(
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: isFileUploaded ? Colors.white : Colors.grey[300],
                                   border: Border.all(color: const Color(0xFFB0B0B0)),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Center(
+                                child: Center(
                                   child: Text(
-                                    'Import from Cloud',
+                                    'extract text',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: isFileUploaded ? Colors.black : Colors.grey,
                                       height: 1.21,
                                     ),
                                   ),
@@ -285,7 +338,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 ),
               ),
             ),
-            
+
             // Bottom Navigation
             const BottomNavigationComponent(currentRoute: '/upload'),
           ],

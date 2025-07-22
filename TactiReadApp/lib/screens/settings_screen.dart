@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation_component.dart';
+import '../services/auth_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -12,7 +13,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -23,13 +24,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   children: [
                     const SizedBox(height: 43), // 피그마에서 타이틀까지의 거리
                     // Settings title
-                    const Text(
+                    Text(
                       'Settings',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
                         height: 1.46,
                       ),
                       textAlign: TextAlign.center,
@@ -354,8 +355,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+
+              // 실제 로그아웃 처리
+              final authService = AuthService();
+              await authService.logout();
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('로그아웃되었습니다.'),
@@ -363,6 +369,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   duration: Duration(seconds: 2),
                 ),
               );
+
+              // 로그인 화면으로 이동
+              Navigator.pushNamedAndRemoveUntil(context, '/sign_in', (route) => false);
             },
             child: const Text('로그아웃'),
           ),

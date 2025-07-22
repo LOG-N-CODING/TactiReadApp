@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -8,8 +9,10 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   bool _isEmailSent = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -17,37 +20,68 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _sendResetLink() {
-    if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your email address'),
-          backgroundColor: Colors.red,
-        ),
-      );
+  void _sendResetLink() async {
+    if (_emailController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('이메일 주소를 입력해주세요.'), backgroundColor: Colors.red));
       return;
     }
 
-    // TODO: Implement password reset logic
     setState(() {
-      _isEmailSent = true;
+      _isLoading = true;
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password reset link sent to your email'),
-        backgroundColor: Colors.green,
-      ),
-    );
+    try {
+      // 실제 구현에서는 새로운 임시 비밀번호를 생성하거나
+      // 비밀번호 재설정 토큰을 이메일로 보내야 합니다.
+      // 여기서는 임시로 고정된 비밀번호를 사용합니다.
+      AuthResult result = await _authService.resetPassword(
+        email: _emailController.text.trim(),
+        newPassword: 'TempPassword123!', // 실제로는 랜덤 비밀번호 생성
+      );
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (result.success) {
+          setState(() {
+            _isEmailSent = true;
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('임시 비밀번호가 이메일로 전송되었습니다. 로그인 후 비밀번호를 변경해주세요.'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 5),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(result.message), backgroundColor: Colors.red));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('비밀번호 재설정 중 오류가 발생했습니다.'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   void _contactSupport() {
     // TODO: Implement contact support functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Redirecting to support...'),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Redirecting to support...')));
   }
 
   @override
@@ -80,7 +114,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Description
               const Text(
                 "Enter your email address and we'll send you a link to reset your password.",
@@ -92,7 +126,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
               const SizedBox(height: 60),
-              
+
               // Email Input
               Container(
                 height: 56,
@@ -106,61 +140,59 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
                     hintText: 'Enter your email address',
-                    hintStyle: TextStyle(
-                      color: Color(0xFF999999),
-                      fontSize: 16,
-                    ),
+                    hintStyle: TextStyle(color: Color(0xFF999999), fontSize: 16),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Send Reset Link Button
               SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _isEmailSent ? null : _sendResetLink,
+                  onPressed: (_isEmailSent || _isLoading) ? null : _sendResetLink,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isEmailSent ? const Color(0xFFCCCCCC) : Colors.black,
+                    backgroundColor: (_isEmailSent || _isLoading)
+                        ? const Color(0xFFCCCCCC)
+                        : Colors.black,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: Text(
-                    _isEmailSent ? 'Email Sent' : 'Send Reset Link',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text(
+                          _isEmailSent ? 'Email Sent' : 'Send Reset Link',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // Divider
-              Container(
-                height: 1,
-                width: double.infinity,
-                color: const Color(0xFFE5E5E5),
-              ),
+              Container(height: 1, width: double.infinity, color: const Color(0xFFE5E5E5)),
               const SizedBox(height: 40),
-              
+
               // Back to Sign In Link
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: const Row(
                   children: [
-                    Icon(
-                      Icons.arrow_back,
-                      size: 16,
-                      color: Color(0xFF3366CC),
-                    ),
+                    Icon(Icons.arrow_back, size: 16, color: Color(0xFF3366CC)),
                     SizedBox(width: 8),
                     Text(
                       'Back to Sign In',
@@ -175,7 +207,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
               const SizedBox(height: 40),
-              
+
               // Help Text
               const Text(
                 "Didn't receive the email? Check your spam folder or contact support.",
@@ -187,7 +219,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Contact Support Button
               SizedBox(
                 width: double.infinity,
@@ -197,9 +229,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF666666),
                     side: const BorderSide(color: Color(0xFFB0B0B0)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text(
                     'Contact Support',
@@ -211,7 +241,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ),
               ),
-              
+
               // Success Message (if email sent) - 더 적은 여백으로 조정
               if (_isEmailSent)
                 Container(
@@ -225,11 +255,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   child: const Column(
                     children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Color(0xFF4CAF50),
-                        size: 32,
-                      ),
+                      Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 32),
                       SizedBox(height: 8),
                       Text(
                         'Reset link sent!',
@@ -253,7 +279,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ],
                   ),
                 ),
-              
+
               const SizedBox(height: 40),
             ],
           ),

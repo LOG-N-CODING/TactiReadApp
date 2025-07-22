@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_service.dart';
 
 class DisplaySettingsScreen extends StatefulWidget {
   const DisplaySettingsScreen({super.key});
@@ -8,128 +11,212 @@ class DisplaySettingsScreen extends StatefulWidget {
 }
 
 class _DisplaySettingsScreenState extends State<DisplaySettingsScreen> {
-  bool isDarkMode = false;
-  bool isHighContrastMode = false;
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 36.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            // Display Title
-            const Text(
-              'Display',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 28,
-                fontWeight: FontWeight.w400,
-                color: Colors.black,
-                height: 1.21,
-              ),
+    return Consumer<ThemeService>(
+      builder: (context, themeService, child) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+            elevation: 0,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.foregroundColor),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 59), // 65 + 34 + 25 = 124 - 65 = 59
-            // Dark Mode Setting
-            Container(
-              width: 306,
-              padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 36.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Dark mode',
+                  const SizedBox(height: 24),
+                  Text(
+                    'Display Settings',
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      fontSize: 18,
+                      fontSize: 28,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge?.color,
                       height: 1.21,
                     ),
                   ),
-                  Semantics(
-                    label: 'Dark mode toggle',
-                    value: isDarkMode ? 'On' : 'Off',
-                    onTap: () {
-                      setState(() {
-                        isDarkMode = !isDarkMode;
-                      });
-                    },
-                    child: _buildCustomSwitch(isDarkMode, (value) {
-                      setState(() {
-                        isDarkMode = value;
-                      });
-                    }),
-                  ),
-                ],
-              ),
-            ),
+                  const SizedBox(height: 39),
 
-            const SizedBox(
-              height: 50,
-            ), // 196 - 124 - 22 = 50 (approximate spacing)
-            // High Contrast Mode Setting
-            Container(
-              width: 306,
-              padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'High contrast mode',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                      height: 1.21,
+                  Container(
+                    width: 306,
+                    padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'Dark mode',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              height: 1.21,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Semantics(
+                          label: 'Dark mode toggle',
+                          value: themeService.isDarkMode ? 'On' : 'Off',
+                          onTap: () => _toggleDarkMode(themeService),
+                          child: _buildCustomSwitch(
+                            themeService.isDarkMode,
+                            () => _toggleDarkMode(themeService),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Semantics(
-                    label: 'High contrast mode toggle',
-                    value: isHighContrastMode ? 'On' : 'Off',
-                    onTap: () {
-                      setState(() {
-                        isHighContrastMode = !isHighContrastMode;
-                      });
-                    },
-                    child: _buildCustomSwitch(isHighContrastMode, (value) {
-                      setState(() {
-                        isHighContrastMode = value;
-                      });
-                    }),
+
+                  const SizedBox(height: 24),
+
+                  Container(
+                    width: 306,
+                    padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Expanded(
+                          child: Text(
+                            'High contrast mode',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              height: 1.21,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Semantics(
+                          label: 'High contrast mode toggle',
+                          value: themeService.isHighContrast ? 'On' : 'Off',
+                          onTap: () => _toggleHighContrast(themeService),
+                          child: _buildCustomSwitch(
+                            themeService.isHighContrast,
+                            () => _toggleHighContrast(themeService),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+
+                  const SizedBox(height: 32),
+
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[800]
+                          : Colors.grey[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[600]!
+                            : Colors.grey[200]!,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.grey[400]
+                                  : Colors.grey[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Display Options',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                height: 1.21,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Dark mode provides a darker color scheme. High contrast mode increases contrast for better readability.',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[400]
+                                : Colors.grey[600],
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _toggleDarkMode(ThemeService themeService) async {
+    await themeService.toggleDarkMode();
+
+    HapticFeedback.selectionClick();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(themeService.isDarkMode ? 'Dark mode enabled' : 'Dark mode disabled'),
+        duration: const Duration(milliseconds: 800),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
       ),
     );
   }
 
-  Widget _buildCustomSwitch(bool value, ValueChanged<bool> onChanged) {
+  void _toggleHighContrast(ThemeService themeService) async {
+    await themeService.toggleHighContrast();
+
+    HapticFeedback.selectionClick();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          themeService.isHighContrast ? 'High contrast enabled' : 'High contrast disabled',
+        ),
+        duration: const Duration(milliseconds: 800),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
+
+  Widget _buildCustomSwitch(bool value, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () => onChanged(!value),
+      onTap: onTap,
       child: Container(
         width: 60,
         height: 30,
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.black, width: 1),
-          color: value ? Colors.black : Colors.white,
+          color: value ? Colors.black : Colors.grey,
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
