@@ -76,7 +76,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           ).showSnackBar(SnackBar(content: Text(result.message), backgroundColor: Colors.green));
 
           // 로그인 화면으로 이동
-          Navigator.pushReplacementNamed(context, '/signin');
+          Navigator.pushReplacementNamed(context, '/sign_in');
         } else {
           // 회원가입 실패
           ScaffoldMessenger.of(

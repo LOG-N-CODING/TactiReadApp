@@ -149,12 +149,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -171,7 +171,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 fontFamily: 'Inter',
                 fontSize: 28,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: null,
                 height: 1.21,
               ),
             ),
@@ -185,13 +185,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 width: 295,
                 height: 50,
                 child: Material(
-                  color: const Color(0xFFF2F2F2),
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.grey[800]
+                      : const Color(0xFFF2F2F2),
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8),
                     onTap: _updateProfile,
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -200,7 +202,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             fontFamily: 'Inter',
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
-                            color: Colors.black,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             height: 1.21,
                           ),
                         ),
@@ -221,13 +223,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 width: 295,
                 height: 50,
                 child: Material(
-                  color: const Color(0xFFFFE5E5),
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.red[900]?.withOpacity(0.3)
+                      : const Color(0xFFFFE5E5),
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8),
                     onTap: _deleteAccount,
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20), // 60 - 40 = 20
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -236,7 +240,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             fontFamily: 'Inter',
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
-                            color: Colors.black,
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.red[300]
+                                : Colors.red[700],
                             height: 1.21,
                           ),
                         ),
@@ -257,7 +263,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 width: 295,
                 height: 50,
                 child: Material(
-                  color: const Color(0xFF4D4D4D),
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.grey[700]
+                      : const Color(0xFF4D4D4D),
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8),

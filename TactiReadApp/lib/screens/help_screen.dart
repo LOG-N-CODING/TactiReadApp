@@ -16,7 +16,7 @@ class _HelpScreenState extends State<HelpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -28,13 +28,13 @@ class _HelpScreenState extends State<HelpScreen> {
                     const SizedBox(height: 65),
 
                     // Help & Support 제목
-                    const Text(
+                    Text(
                       'Help & Support',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
                         height: 1.46,
                       ),
                       textAlign: TextAlign.center,
@@ -94,11 +94,11 @@ class _HelpScreenState extends State<HelpScreen> {
           Expanded(
             child: TextField(
               controller: _searchController,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'SF Pro Text',
                 fontSize: 17,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
               ),
               decoration: const InputDecoration(
                 hintText: 'Search',
@@ -196,15 +196,15 @@ class _HelpScreenState extends State<HelpScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
-            Icon(icon, size: 24, color: Colors.black),
+            Icon(icon, size: 24, color: Theme.of(context).textTheme.bodyLarge?.color),
             const SizedBox(width: 12),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Pretendard Variable',
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
             ),
           ],
@@ -399,10 +399,15 @@ class _FAQScreenState extends State<FAQScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('FAQ'),
-        backgroundColor: Colors.blue.shade600,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark 
+            ? Colors.black 
+            : Colors.white,
+        foregroundColor: Theme.of(context).brightness == Brightness.dark 
+            ? Colors.white 
+            : Colors.black,
       ),
       body: Column(
         children: [
@@ -412,7 +417,9 @@ class _FAQScreenState extends State<FAQScreen> {
                 // 카테고리 사이드바
                 Container(
                   width: 120,
-                  color: Colors.grey.shade100,
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.grey.shade800 
+                      : Colors.grey.shade100,
                   child: ListView.builder(
                     itemCount: _categories.length,
                     itemBuilder: (context, index) {
@@ -420,7 +427,11 @@ class _FAQScreenState extends State<FAQScreen> {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue.shade600 : Colors.transparent,
+                          color: isSelected 
+                              ? (Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.white 
+                                  : Colors.black)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ListTile(
@@ -429,7 +440,11 @@ class _FAQScreenState extends State<FAQScreen> {
                             _categories[index],
                             style: TextStyle(
                               fontSize: 12,
-                              color: isSelected ? Colors.white : Colors.grey.shade700,
+                              color: isSelected 
+                                  ? (Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.black 
+                                      : Colors.white)
+                                  : Theme.of(context).textTheme.bodyMedium?.color,
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                             ),
                           ),
@@ -452,11 +467,13 @@ class _FAQScreenState extends State<FAQScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
-                        color: Colors.blue.shade50,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade200,
                         child: Text(
                           _categories[_selectedCategoryIndex],
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: Colors.blue.shade700,
+                            color: Theme.of(context).textTheme.titleLarge?.color,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -490,14 +507,30 @@ class _FAQScreenState extends State<FAQScreen> {
   Widget _buildFAQItem(String question, String answer) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      color: Theme.of(context).cardColor,
       child: ExpansionTile(
-        title: Text(question, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
+        title: Text(
+          question, 
+          style: TextStyle(
+            fontWeight: FontWeight.w500, 
+            fontSize: 16,
+            color: Theme.of(context).textTheme.titleMedium?.color,
+          ),
+        ),
+        iconColor: Theme.of(context).textTheme.bodyLarge?.color,
+        collapsedIconColor: Theme.of(context).textTheme.bodyLarge?.color,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(answer, style: TextStyle(color: Colors.grey.shade700, height: 1.5)),
+              child: Text(
+                answer, 
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color, 
+                  height: 1.5,
+                ),
+              ),
             ),
           ),
         ],

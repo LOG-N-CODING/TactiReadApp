@@ -81,12 +81,12 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -97,13 +97,13 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
           children: [
             const SizedBox(height: 24),
             // Reading Speed Title
-            const Text(
+            Text(
               'Reading Speed',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 28,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge?.color,
                 height: 1.21,
               ),
             ),
@@ -116,13 +116,21 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                   // Slider with custom styling
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: const Color(0xFF4D4D4D),
-                      inactiveTrackColor: const Color(0xFFE6E6E6),
+                      activeTrackColor: Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.white 
+                          : const Color(0xFF4D4D4D),
+                      inactiveTrackColor: Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.grey.shade700 
+                          : const Color(0xFFE6E6E6),
                       trackHeight: 6,
-                      thumbColor: const Color(0xFF4D4D4D),
+                      thumbColor: Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.white 
+                          : const Color(0xFF4D4D4D),
                       thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                       overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-                      overlayColor: const Color(0xFF4D4D4D).withOpacity(0.1),
+                      overlayColor: (Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.white 
+                          : const Color(0xFF4D4D4D)).withOpacity(0.1),
                       trackShape: const RoundedRectSliderTrackShape(),
                     ),
                     child: Semantics(
@@ -148,7 +156,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                           fontFamily: 'Inter',
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           height: 1.21,
                         ),
                       ),
@@ -158,7 +166,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                           fontFamily: 'Inter',
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           height: 1.21,
                         ),
                       ),
@@ -180,18 +188,18 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                       fontFamily: 'Inter',
                       fontSize: 16,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       height: 1.21,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     _getSpeedDescription(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge?.color,
                       height: 1.21,
                     ),
                   ),
@@ -202,7 +210,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                       fontFamily: 'Inter',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).textTheme.bodySmall?.color,
                       height: 1.21,
                     ),
                   ),
@@ -222,7 +230,7 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                     fontFamily: 'Inter',
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.titleMedium?.color,
                     height: 1.21,
                   ),
                 ),
@@ -242,10 +250,22 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.black : Colors.grey[200],
+                            color: isSelected 
+                                ? (Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.white 
+                                    : Colors.black)
+                                : (Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey[700] 
+                                    : Colors.grey[200]),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: isSelected ? Colors.black : Colors.grey[400]!,
+                              color: isSelected 
+                                  ? (Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.white 
+                                      : Colors.black)
+                                  : (Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.grey[600]! 
+                                      : Colors.grey[400]!),
                               width: 1,
                             ),
                           ),
@@ -255,7 +275,11 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                               fontFamily: 'Inter',
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: isSelected ? Colors.white : Colors.black,
+                              color: isSelected 
+                                  ? (Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.black 
+                                      : Colors.white)
+                                  : Theme.of(context).textTheme.bodyMedium?.color,
                               height: 1.21,
                             ),
                           ),

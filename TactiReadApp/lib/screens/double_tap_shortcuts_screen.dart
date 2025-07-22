@@ -51,12 +51,12 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -74,7 +74,7 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
                   fontFamily: 'Inter',
                   fontSize: 28,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: null,
                   height: 1.21,
                 ),
               ),
@@ -90,13 +90,13 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
                       child: Container(
                         width: 213,
                         height: 52,
-                        child: const Text(
+                        child: Text(
                           'Double-tap to start/pause reading',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontSize: 18,
                             fontWeight: FontWeight.w400,
-                            color: Colors.black,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             height: 1.21,
                           ),
                         ),
@@ -119,16 +119,26 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.grey[850] 
+                      : Colors.grey[50],
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey[200]!),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark 
+                        ? Colors.grey[700]! 
+                        : Colors.grey[200]!
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, size: 20, color: Colors.grey[600]),
+                        Icon(Icons.info_outline, 
+                             size: 20, 
+                             color: Theme.of(context).brightness == Brightness.dark 
+                                 ? Colors.grey[400] 
+                                 : Colors.grey[600]),
                         const SizedBox(width: 8),
                         Text(
                           'About Double-tap Shortcuts',
@@ -136,7 +146,7 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
                             fontFamily: 'Inter',
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
-                            color: Colors.grey[800],
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             height: 1.21,
                           ),
                         ),
@@ -149,7 +159,7 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
                         fontFamily: 'Inter',
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         height: 1.4,
                       ),
                     ),
@@ -174,8 +184,11 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-
-          color: value ? Colors.black : Colors.grey,
+          color: value 
+              ? (Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.white 
+                  : Colors.black)
+              : Colors.grey,
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
@@ -184,7 +197,9 @@ class _DoubleTapShortcutsScreenState extends State<DoubleTapShortcutsScreen> {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.black 
+                  : Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(

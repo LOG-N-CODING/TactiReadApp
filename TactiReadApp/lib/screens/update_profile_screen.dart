@@ -165,12 +165,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.bodyLarge?.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -198,7 +198,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         fontFamily: 'Inter',
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: null,
                         height: 1.21,
                       ),
                     ),
@@ -212,13 +212,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Email Label and Field (Read Only)
-                          const Text(
+                          Text(
                             'Email',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                               height: 1.21,
                             ),
                           ),
@@ -227,19 +227,28 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             width: double.infinity,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF2F2F2),
+                              color: Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.grey[800] 
+                                  : const Color(0xFFF2F2F2),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFFCCCCCC), width: 1),
+                              border: Border.all(
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey[600]! 
+                                    : const Color(0xFFCCCCCC), 
+                                width: 1
+                              ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
                               child: Text(
                                 _userEmail,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xFF999999),
+                                  color: Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.grey[400] 
+                                      : const Color(0xFF999999),
                                   height: 1.21,
                                 ),
                               ),
@@ -249,13 +258,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           const SizedBox(height: 17),
 
                           // Name Label and Field
-                          const Text(
+                          Text(
                             'Name',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                               height: 1.21,
                             ),
                           ),
@@ -268,26 +277,45 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               validator: _validateName,
                               decoration: InputDecoration(
                                 hintText: 'Enter your name',
-                                hintStyle: const TextStyle(
+                                hintStyle: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xFFB3B3B3),
+                                  color: Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.grey[500] 
+                                      : const Color(0xFFB3B3B3),
                                   height: 1.21,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey[800] 
+                                    : Colors.white,
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFB3B3B3), width: 1),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[600]! 
+                                        : const Color(0xFFB3B3B3), 
+                                    width: 1
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFB3B3B3), width: 1),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[600]! 
+                                        : const Color(0xFFB3B3B3), 
+                                    width: 1
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Colors.black, width: 2),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.blue 
+                                        : Colors.black, 
+                                    width: 2
+                                  ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -302,11 +330,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                   vertical: 15,
                                 ),
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                                 height: 1.21,
                               ),
                             ),
@@ -315,13 +343,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           const SizedBox(height: 17),
 
                           // Password Label and Field
-                          const Text(
+                          Text(
                             'Password',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                               height: 1.21,
                             ),
                           ),
@@ -336,19 +364,25 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
                                 hintText: 'Enter new password',
-                                hintStyle: const TextStyle(
+                                hintStyle: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xFFB3B3B3),
+                                  color: Theme.of(context).brightness == Brightness.dark 
+                                      ? Colors.grey[500] 
+                                      : const Color(0xFFB3B3B3),
                                   height: 1.21,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey[800] 
+                                    : Colors.white,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                                    color: const Color(0xFFB3B3B3),
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[500] 
+                                        : const Color(0xFFB3B3B3),
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -359,15 +393,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFB3B3B3), width: 1),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[600]! 
+                                        : const Color(0xFFB3B3B3), 
+                                    width: 1
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFB3B3B3), width: 1),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[600]! 
+                                        : const Color(0xFFB3B3B3), 
+                                    width: 1
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Colors.black, width: 2),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.blue 
+                                        : Colors.black, 
+                                    width: 2
+                                  ),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -382,11 +431,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                   vertical: 15,
                                 ),
                               ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.black,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                                 height: 1.21,
                               ),
                             ),
@@ -406,7 +455,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         width: 295,
                         height: 50,
                         child: Material(
-                          color: Colors.black,
+                          color: Theme.of(context).brightness == Brightness.dark 
+                              ? Colors.grey[700] 
+                              : Colors.black,
                           borderRadius: BorderRadius.circular(8),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(8),

@@ -60,7 +60,9 @@ class BottomNavigationComponent extends StatelessWidget {
             width: 135,
             height: 5,
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.white 
+                  : Colors.black,
               borderRadius: BorderRadius.circular(17),
             ),
           ),
@@ -86,9 +88,21 @@ class BottomNavigationComponent extends StatelessWidget {
         width: width,
         height: 43,
         decoration: BoxDecoration(
-          color: isActive ? Colors.black : Colors.white,
+          color: isActive 
+              ? (Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.white 
+                  : Colors.black)
+              : (Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.grey.shade800 
+                  : Colors.white),
           border: Border.all(
-            color: isActive ? Colors.black : const Color(0xFFB0B0B0),
+            color: isActive 
+                ? (Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white 
+                    : Colors.black)
+                : (Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.grey.shade600 
+                    : const Color(0xFFB0B0B0)),
           ),
           borderRadius: BorderRadius.circular(16),
         ),
@@ -98,7 +112,13 @@ class BottomNavigationComponent extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w400,
-              color: isActive ? Colors.white : Colors.black,
+              color: isActive 
+                  ? (Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.black 
+                      : Colors.white)
+                  : (Theme.of(context).brightness == Brightness.dark 
+                      ? Colors.white 
+                      : Colors.black),
               fontFamily: 'Inter',
             ),
           ),

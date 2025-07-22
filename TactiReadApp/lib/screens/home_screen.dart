@@ -404,12 +404,12 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 41),
               child: Column(
                 children: [
-                  const Text(
+                  Text(
                     'voice assist',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       height: 1.46,
                     ),
                     textAlign: TextAlign.center,
@@ -479,10 +479,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
                         ),
                       ),
                     ),
@@ -512,12 +512,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 41),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Document list',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                         height: 1.46,
                       ),
                       textAlign: TextAlign.center,

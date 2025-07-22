@@ -24,12 +24,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
   late FlutterTts _flutterTts;
   late Stt _stt;
   bool _isListening = false;
-  String _recognizedText = '';
-  SttRecognition? _lastRecognition;
   Document? document;
   String fileName = 'File title';
   String filePath = '';
   String fileType = '';
+  bool _isAudioCueEnabled = true; // Audio cue 설정
+  bool _isDoubleTapEnabled = true; // Double tap 설정
 
   @override
   void initState() {
@@ -37,6 +37,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
     _initTts();
     _initSpeechRecognition();
     _loadReadingSpeed();
+    _loadAudioCueSetting();
+    _loadDoubleTapSetting();
   }
 
   // SharedPreferences에서 읽기 속도 로드
@@ -55,6 +57,51 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Future<void> _saveReadingSpeed(double speed) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('reading_speed', speed);
+  }
+
+  // SharedPreferences에서 Audio Cue 설정 로드
+  Future<void> _loadAudioCueSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isAudioCueEnabled = prefs.getBool('isAudioCueEnabled') ?? true;
+    });
+  }
+
+  // SharedPreferences에서 Double Tap 설정 로드
+  Future<void> _loadDoubleTapSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isDoubleTapEnabled = prefs.getBool('isDoubleTapEnabled') ?? true;
+    });
+  }
+
+  // TTS 실행 전 Audio Cue 설정 확인하는 헬퍼 메서드
+  Future<void> _speakIfEnabled(String text) async {
+    if (_isAudioCueEnabled) {
+      await _flutterTts.speak(text);
+    }
+  }
+
+  // 더블탭으로 읽기 토글하는 메서드
+  void _handleDoubleTap() {
+    if (_isDoubleTapEnabled) {
+      // 햅틱 피드백
+      HapticFeedback.mediumImpact();
+      
+      // 읽기 토글
+      _startReading();
+      
+      // 더블탭 피드백 메시지
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_isReading ? 'Double-tap: Reading started' : 'Double-tap: Reading stopped'),
+          backgroundColor: _isReading ? Colors.green : Colors.orange,
+          duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+    }
   }
 
   void _initTts() async {
@@ -177,11 +224,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
       // 결과 리스너
       _stt.onResultChanged.listen((result) {
-        setState(() {
-          _lastRecognition = result;
-          _recognizedText = result.text;
-        });
-
         // 최종 결과가 나오면 음성 명령 처리
         if (result.text.isNotEmpty && result.isFinal) {
           _processVoiceCommand(result.text);
@@ -227,7 +269,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
   }
 
   void _startVoiceInstructions() async {
-    await _flutterTts.speak('Voice commands available: next, previous, start reading, stop');
+    await _speakIfEnabled('Voice commands available: next, previous, start reading, stop');
 
     // 음성 안내 후 잠시 대기 후 listening 시작
     Future.delayed(const Duration(seconds: 4), () {
@@ -265,7 +307,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
         );
       } catch (e) {
         print('Error during speech recognition: $e');
-        setState(() => _isListening = false);
+        // setState(() => _isListening = false);
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -283,7 +325,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   void _previousPage() {
     // 음성 확인 메시지
-    _flutterTts.speak('Going to previous page');
+    _speakIfEnabled('Going to previous page');
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -296,7 +338,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   void _nextPage() {
     // 음성 확인 메시지
-    _flutterTts.speak('Going to next page');
+    _speakIfEnabled('Going to next page');
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -338,6 +380,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
     // 화면으로 돌아올 때마다 설정 다시 로드
     _loadReadingSpeed();
     _loadVoiceSettings();
+    _loadAudioCueSetting();
+    _loadDoubleTapSetting();
   }
 
   // Start Reading 기능 구현
@@ -348,7 +392,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
     if (_isReading) {
       // 음성 확인 메시지
-      _flutterTts.speak('Starting to read document');
+      _speakIfEnabled('Starting to read document');
 
       // 문서가 선택된 경우 해당 문서 처리
       _processSelectedDocument();
@@ -363,7 +407,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     } else {
       // 읽기 중지 시 TTS도 중지
       _flutterTts.stop();
-      _flutterTts.speak('Reading stopped');
+      _speakIfEnabled('Reading stopped');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -499,7 +543,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   // TTS로 추출된 텍스트 읽기
   Future<void> _speakExtractedText(String text) async {
-    if (text.isEmpty) return;
+    if (text.isEmpty || !_isAudioCueEnabled) return;
 
     try {
       // 저장된 설정 다시 로드
@@ -521,12 +565,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
       List<String> sentences = _splitTextIntoSentences(text);
 
       for (String sentence in sentences) {
-        if (_isReading && sentence.trim().isNotEmpty) {
+        if (_isReading && sentence.trim().isNotEmpty && _isAudioCueEnabled) {
           await _flutterTts.speak(sentence.trim());
           // 각 문장 사이에 짧은 간격
           await Future.delayed(const Duration(milliseconds: 500));
         } else {
-          break; // 읽기가 중지되면 루프 종료
+          break; // 읽기가 중지되거나 오디오가 비활성화되면 루프 종료
         }
       }
     } catch (e) {
@@ -603,17 +647,20 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+    return GestureDetector(
+      onDoubleTap: _handleDoubleTap,
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        bottomNavigationBar: const BottomNavigationComponent(currentRoute: '/reading'),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                     const SizedBox(height: 40),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -625,11 +672,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               width: MediaQuery.of(context).size.width * 0.25,
                               child: Text(
                                 fileName,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontFamily: 'Pretendard Variable',
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF505050),
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
                                   height: 1.0,
                                 ),
                                 overflow: TextOverflow.ellipsis, // 넘치면 ... 표시
@@ -640,13 +687,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             const SizedBox(height: 26),
 
                             // Device status
-                            const Text(
+                            Text(
                               'Device status',
                               style: TextStyle(
                                 fontFamily: 'Pretendard Variable',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF505050),
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
                                 height: 1.0,
                               ),
                             ),
@@ -660,17 +707,25 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               width: MediaQuery.of(context).size.width * 0.35,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: _isReading ? Colors.red : Colors.black,
+                                color: _isReading 
+                                    ? Colors.red 
+                                    : (Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.white 
+                                        : Colors.black),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Center(
                                 child: Text(
                                   _isReading ? 'Stop Reading' : 'Start Reading',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontFamily: 'Pretendard Variable',
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.white,
+                                    color: _isReading 
+                                        ? Colors.white 
+                                        : (Theme.of(context).brightness == Brightness.dark 
+                                            ? Colors.black 
+                                            : Colors.white),
                                     height: 1.0,
                                   ),
                                 ),
@@ -694,18 +749,24 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             width: 142,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: const Color(0xFFB0B0B0)),
+                              color: Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.grey.shade800 
+                                  : Colors.white,
+                              border: Border.all(
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey.shade600 
+                                    : const Color(0xFFB0B0B0),
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 'Previous page',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
                                   height: 1.21,
                                 ),
                                 textAlign: TextAlign.center,
@@ -723,18 +784,24 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             width: 142,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: const Color(0xFFB0B0B0)),
+                              color: Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.grey.shade800 
+                                  : Colors.white,
+                              border: Border.all(
+                                color: Theme.of(context).brightness == Brightness.dark 
+                                    ? Colors.grey.shade600 
+                                    : const Color(0xFFB0B0B0),
+                              ),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 'Next page',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                  color: Theme.of(context).textTheme.bodyMedium?.color,
                                   height: 1.21,
                                 ),
                                 textAlign: TextAlign.center,
@@ -754,13 +821,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
+                              Text(
                                 'Reading speed',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
                                   fontWeight: FontWeight.w400,
-                                  color: Colors.black,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
                                   height: 1.46,
                                 ),
                                 textAlign: TextAlign.center,
@@ -773,10 +840,16 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.grey[800] 
+                                        : Colors.grey[100],
                                     borderRadius: BorderRadius.circular(6),
                                   ),
-                                  child: Icon(Icons.settings, size: 20, color: Colors.grey[600]),
+                                  child: Icon(
+                                    Icons.settings, 
+                                    size: 20, 
+                                    color: Theme.of(context).iconTheme.color,
+                                  ),
                                 ),
                               ),
                             ],
@@ -795,7 +868,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                     width: 256,
                                     height: 12,
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.4),
+                                      color: Theme.of(context).brightness == Brightness.dark 
+                                          ? Colors.white.withOpacity(0.4) 
+                                          : Colors.black.withOpacity(0.4),
                                       borderRadius: BorderRadius.circular(80),
                                     ),
                                   ),
@@ -808,7 +883,9 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                     width: 256 * _readingSpeed,
                                     height: 12,
                                     decoration: BoxDecoration(
-                                      color: Colors.black,
+                                      color: Theme.of(context).brightness == Brightness.dark 
+                                          ? Colors.white 
+                                          : Colors.black,
                                       borderRadius: BorderRadius.circular(80),
                                     ),
                                   ),
@@ -820,8 +897,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   child: Container(
                                     width: 44,
                                     height: 44,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).brightness == Brightness.dark 
+                                          ? Colors.white 
+                                          : Colors.black,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
@@ -854,13 +933,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                     Center(
                       child: Column(
                         children: [
-                          const Text(
+                          Text(
                             'graphics',
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 18,
                               fontWeight: FontWeight.w400,
-                              color: Colors.black,
+                              color: Theme.of(context).textTheme.bodyLarge?.color,
                               height: 1.46,
                             ),
                             textAlign: TextAlign.center,
@@ -876,7 +955,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                               width: 120,
                               height: 60,
                               decoration: BoxDecoration(
-                                color: _toPixel ? Colors.black : Colors.grey,
+                                color: _toPixel 
+                                    ? (Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.white 
+                                        : Colors.black)
+                                    : Colors.grey,
                                 borderRadius: BorderRadius.circular(80),
                               ),
                               child: Stack(
@@ -888,8 +971,12 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                     child: Container(
                                       width: 44,
                                       height: 44,
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
+                                      decoration: BoxDecoration(
+                                        color: _toPixel 
+                                            ? (Theme.of(context).brightness == Brightness.dark 
+                                                ? Colors.black 
+                                                : Colors.white)
+                                            : Colors.white,
                                         shape: BoxShape.circle,
                                       ),
                                     ),
@@ -933,13 +1020,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                 ),
               ),
             ),
-
-            // Bottom Navigation
-            const BottomNavigationComponent(currentRoute: '/reading'),
           ],
         ),
       ),
-    );
+    ),
+    ); // GestureDetector의 닫는 괄호
   }
 
   // TTS 읽기 중지
@@ -949,7 +1034,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
     });
 
     _flutterTts.stop();
-    _flutterTts.speak('Reading stopped');
+    _speakIfEnabled('Reading stopped');
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

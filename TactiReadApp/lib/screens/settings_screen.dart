@@ -77,13 +77,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Dark mode',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -98,13 +98,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'High contrast mode',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -149,13 +149,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Voice selection',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -170,13 +170,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Reading speed control',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -221,13 +221,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Audio cue toggle',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -242,13 +242,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Double-tap shortcuts',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -293,13 +293,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Profile',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),
@@ -314,13 +314,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: Container(
                                   width: double.infinity,
                                   padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: const Text(
+                                  child: Text(
                                     'Logout',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
                                       height: 1.46,
                                     ),
                                   ),

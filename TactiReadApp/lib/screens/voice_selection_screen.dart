@@ -188,12 +188,12 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -204,25 +204,25 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
           children: [
             const SizedBox(height: 24),
             // Voice Selection Title
-            const Text(
+            Text(
               'Voice Selection',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 28,
                 fontWeight: FontWeight.w400,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge?.color,
                 height: 1.21,
               ),
             ),
             const SizedBox(height: 51), // 150 - 65 - 34 = 51
             // Voice Type Header
-            const Text(
+            Text(
               'Voice Type',
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 height: 1.21,
               ),
             ),
@@ -260,13 +260,26 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
           width: 295,
           height: 40,
           decoration: BoxDecoration(
-            color: isSelected ? Colors.black : const Color(0xFFD9D9D9),
-            border: Border.all(color: const Color(0xFFB3B3B3), width: 1),
+            color: isSelected 
+                ? (Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white 
+                    : Colors.black)
+                : (Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.grey.shade800 
+                    : const Color(0xFFD9D9D9)),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.grey.shade600 
+                  : const Color(0xFFB3B3B3), 
+              width: 1,
+            ),
             borderRadius: BorderRadius.circular(8),
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: (Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.white 
+                          : Colors.black).withOpacity(0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -283,7 +296,11 @@ class _VoiceSelectionScreenState extends State<VoiceSelectionScreen> {
                   fontFamily: 'Inter',
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isSelected 
+                      ? (Theme.of(context).brightness == Brightness.dark 
+                          ? Colors.black 
+                          : Colors.white)
+                      : Theme.of(context).textTheme.bodyLarge?.color,
                   height: 1.21,
                 ),
               ),
