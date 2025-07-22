@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
 import 'screens/accessibility_setup_screen.dart';
+import 'screens/audio_cue_toggle_screen.dart';
 import 'screens/create_account_screen.dart';
 import 'screens/device_pairing_screen.dart';
+import 'screens/display_settings_screen.dart';
+import 'screens/double_tap_shortcuts_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/help_screen.dart';
+import 'screens/help_support_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/profile_settings_screen.dart';
 import 'screens/reading_screen.dart';
+import 'screens/reading_speed_control_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/tutorial_screen.dart';
+import 'screens/update_profile_screen.dart';
 import 'screens/upload_screen.dart';
+import 'screens/voice_selection_screen.dart';
 import 'screens/welcome_screen.dart';
 
 void main() {
@@ -51,6 +59,14 @@ class TactiReadApp extends StatelessWidget {
         '/device-pairing': (context) => const DevicePairingScreen(),
         '/tutorial': (context) => const TutorialScreen(),
         '/help': (context) => const HelpScreen(),
+        '/help-support': (context) => const HelpSupportScreen(),
+        '/display-settings': (context) => const DisplaySettingsScreen(),
+        '/voice-selection': (context) => const VoiceSelectionScreen(),
+        '/reading-speed-control': (context) => const ReadingSpeedControlScreen(),
+        '/audio-cue-toggle': (context) => const AudioCueToggleScreen(),
+        '/double-tap-shortcuts': (context) => const DoubleTapShortcutsScreen(),
+        '/profile-settings': (context) => const ProfileSettingsScreen(),
+        '/update-profile': (context) => const UpdateProfileScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
