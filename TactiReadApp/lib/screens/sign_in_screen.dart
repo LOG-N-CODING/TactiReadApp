@@ -26,7 +26,10 @@ class _SignInScreenState extends State<SignInScreen> {
   void _signIn() async {
     if (_emailController.text.trim().isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일과 비밀번호를 입력해주세요.'), backgroundColor: Colors.red),
+        const SnackBar(
+          content: Text('Please enter your email and password.'),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
@@ -76,7 +79,10 @@ class _SignInScreenState extends State<SignInScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('로그인 중 오류가 발생했습니다.'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('An error occurred during login.'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -84,195 +90,229 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Theme.of(context).appBarTheme.foregroundColor),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 41.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight:
-                  MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top -
-                  MediaQuery.of(context).padding.bottom -
-                  kToolbarHeight,
-            ),
-            child: IntrinsicHeight(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  // Title
-                  const Text(
-                    'Sign In',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                      fontFamily: 'Inter',
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-
-                  // Email Input
-                  Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFB0B0B0)),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter your email',
-                        hintStyle: TextStyle(color: Color(0xFF999999), fontSize: 16),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 41.0),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom -
+                    kToolbarHeight -
+                    MediaQuery.of(context).viewInsets.bottom -
+                    40,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    // Title
+                    Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
+                        fontFamily: 'Inter',
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 60),
 
-                  // Password Input
-                  Container(
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFB0B0B0)),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: TextField(
-                      controller: _passwordController,
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
-                        hintStyle: const TextStyle(color: Color(0xFF999999), fontSize: 16),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                            color: const Color(0xFF999999),
+                    // Email Input
+                    Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        border: Border.all(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                        decoration: InputDecoration(
+                          hintText: 'Enter your email',
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                            fontSize: 16,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
+                    const SizedBox(height: 20),
 
-                  // Forgot Password Link
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, '/forgot_password'),
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(fontSize: 14, color: Color(0xFF3366CC), fontFamily: 'Inter'),
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Sign In Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _signIn,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    // Password Input
+                    Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        border: Border.all(color: Theme.of(context).dividerColor),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'Inter',
-                              ),
+                      child: TextField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+                        decoration: InputDecoration(
+                          hintText: 'Enter your password',
+                          hintStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                            fontSize: 16,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                             ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 18),
 
-                  // Create Account Link
-                  Center(
-                    child: GestureDetector(
-                      onTap: () => Navigator.pushReplacementNamed(context, '/create_account'),
-                      child: RichText(
-                        text: const TextSpan(
-                          text: "Don't have an account? ",
+                    // Forgot Password Link
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/forgot_password');
+                        },
+                        child: Text(
+                          'Forgot Password?',
                           style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
                             fontSize: 14,
-                            color: Color(0xFF666666),
+                            fontWeight: FontWeight.w500,
                             fontFamily: 'Inter',
                           ),
-                          children: [
-                            TextSpan(
-                              text: 'Create Account',
-                              style: TextStyle(
-                                color: Color(0xFF3366CC),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 30),
 
-                  const Spacer(),
-
-                  // TactiRead Branding
-                  const Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'TactiRead',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xFF333333),
-                            fontFamily: 'Inter',
-                          ),
+                    // Sign In Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _isLoading ? null : _signIn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                          foregroundColor: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
-                        Text(
-                          'Read Beyond Limits',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF666666),
-                            fontFamily: 'Inter',
-                          ),
-                        ),
-                      ],
+                        child: _isLoading
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                'Sign In',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'Inter',
+                                ),
+                              ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                ],
+                    const SizedBox(height: 24),
+
+                    // Create Account Link
+                    Center(
+                      child: GestureDetector(
+                        onTap: () => Navigator.pushReplacementNamed(context, '/create_account'),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                              fontFamily: 'Inter',
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Create Account',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    // TactiRead Branding
+                    Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            'TactiRead',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).textTheme.titleMedium?.color,
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                          Text(
+                            'Read Beyond Limits',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                              fontFamily: 'Inter',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ),

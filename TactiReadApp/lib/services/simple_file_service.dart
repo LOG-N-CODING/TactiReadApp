@@ -17,7 +17,7 @@ class SimpleFileService {
       // 현재 사용자 확인
       final currentUser = await UserSessionService.getCurrentUser();
       if (currentUser == null) {
-        return FileUploadResult(success: false, message: '로그인이 필요합니다.');
+        return FileUploadResult(success: false, message: 'Login is required.');
       }
 
       // 업로드 시뮬레이션 (로딩 시간)
@@ -56,14 +56,14 @@ class SimpleFileService {
       if (documentId > 0) {
         return FileUploadResult(
           success: true,
-          message: '파일이 성공적으로 업로드되었습니다.',
+          message: 'File uploaded successfully.',
           document: document.copyWith(id: documentId),
         );
       } else {
-        return FileUploadResult(success: false, message: '파일 정보 저장 중 오류가 발생했습니다.');
+        return FileUploadResult(success: false, message: 'Error occurred while saving file information.');
       }
     } catch (e) {
-      return FileUploadResult(success: false, message: '파일 업로드 중 오류가 발생했습니다: ${e.toString()}');
+      return FileUploadResult(success: false, message: 'Error occurred while uploading file: ${e.toString()}');
     }
   }
 

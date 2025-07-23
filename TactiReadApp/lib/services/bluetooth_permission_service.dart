@@ -42,20 +42,20 @@ class BluetoothPermissionService {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('권한이 필요합니다'),
+          title: const Text('Permissions Required'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('TactiRead가 점자 디스플레이와 연결하려면 다음 권한이 필요합니다:'),
+              const Text('TactiRead requires the following permissions to connect to the Braille display:'),
               const SizedBox(height: 16),
-              const Text('• 블루투스 액세스'),
-              const Text('• 블루투스 스캔'),
-              const Text('• 블루투스 연결'),
-              const Text('• 위치 정보 (블루투스 검색용)'),
+              const Text('• Bluetooth Access'),
+              const Text('• Bluetooth Scan'),
+              const Text('• Bluetooth Connect'),
+              const Text('• Location Information (for Bluetooth discovery)'),
               const SizedBox(height: 16),
               if (deniedPermissions.isNotEmpty)
                 Text(
-                  '거부된 권한: $deniedPermissions',
+                  'Denied Permissions: $deniedPermissions',
                   style: const TextStyle(color: Colors.red, fontSize: 12),
                 ),
             ],
@@ -65,14 +65,14 @@ class BluetoothPermissionService {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('나중에'),
+              child: const Text('Later'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 openAppSettings();
               },
-              child: const Text('설정으로 이동'),
+              child: const Text('Go to Settings'),
             ),
           ],
         );
@@ -83,14 +83,14 @@ class BluetoothPermissionService {
   static String _getPermissionName(Permission permission) {
     switch (permission) {
       case Permission.bluetooth:
-        return '블루투스';
+        return 'Bluetooth';
       case Permission.bluetoothConnect:
-        return '블루투스 연결';
+        return 'Bluetooth Connect';
       case Permission.bluetoothScan:
-        return '블루투스 스캔';
+        return 'Bluetooth Scan';
       case Permission.location:
       case Permission.locationWhenInUse:
-        return '위치 정보';
+        return 'Location Information';
       default:
         return permission.toString();
     }

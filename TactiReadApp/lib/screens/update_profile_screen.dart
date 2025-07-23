@@ -48,7 +48,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('사용자 정보를 불러오는 중 오류가 발생했습니다.'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('An error occurred while loading user information.'), backgroundColor: Colors.red),
         );
       }
     }
@@ -68,7 +68,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
     if (_currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('사용자 정보를 찾을 수 없습니다.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Unable to find user information.'), backgroundColor: Colors.red),
       );
       return;
     }
@@ -113,7 +113,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('프로필이 성공적으로 업데이트되었습니다!'),
+            content: Text('Profile updated successfully.'),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 2),
           ),
@@ -133,7 +133,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('프로필 업데이트 중 오류가 발생했습니다: ${e.toString()}'),
+            content: Text('An error occurred while updating the profile: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),

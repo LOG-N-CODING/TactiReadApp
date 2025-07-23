@@ -16,7 +16,7 @@ class ReadingScreen extends StatefulWidget {
 }
 
 class _ReadingScreenState extends State<ReadingScreen> {
-  double _readingSpeed = 0.3; // 0.0 to 1.0
+  double _readingSpeed = 0.3; // Default to 0.3 (new range 0.1-0.5)
   bool _toPixel = false; // Default to off
   bool _isReading = false; // Reading state
 
@@ -45,11 +45,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
   Future<void> _loadReadingSpeed() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _readingSpeed = prefs.getDouble('reading_speed') ?? 0.3;
+      double savedSpeed = prefs.getDouble('reading_speed') ?? 0.3;
+      // 새로운 범위(0.1-0.5)에 맞게 값 제한
+      _readingSpeed = savedSpeed.clamp(0.1, 0.5);
+
+      // 만약 저장된 값이 범위를 벗어났다면 새로운 값으로 저장
+      if (savedSpeed != _readingSpeed) {
+        _saveReadingSpeed(_readingSpeed);
+      }
     });
 
-    // TTS 속도도 함께 업데이트
-    double ttsRate = 0.2 + (_readingSpeed * 0.8); // 0.2 ~ 1.0 range
+    // TTS 속도도 함께 업데이트 (0.1-0.5 범위를 0.3-0.7 TTS 범위로 매핑)
+    double ttsRate = 0.3 + ((_readingSpeed - 0.1) / 0.4 * 0.4); // 0.3 ~ 0.7 range
     _flutterTts.setSpeechRate(ttsRate);
   }
 
@@ -87,10 +94,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
     if (_isDoubleTapEnabled) {
       // 햅틱 피드백
       HapticFeedback.mediumImpact();
-      
+
       // 읽기 토글
       _startReading();
-      
+
       // 더블탭 피드백 메시지
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -354,8 +361,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       _readingSpeed = value;
     });
 
-    // Reading speed에 따라 TTS 속도 조정
-    double ttsRate = 0.2 + (_readingSpeed * 0.8); // 0.2 ~ 1.0 range
+    // Reading speed에 따라 TTS 속도 조정 (0.1-0.5 범위를 0.3-0.7 TTS 범위로 매핑)
+    double ttsRate = 0.3 + ((_readingSpeed - 0.1) / 0.4 * 0.4); // 0.3 ~ 0.7 range
     _flutterTts.setSpeechRate(ttsRate);
 
     // SharedPreferences에 저장
@@ -423,11 +430,14 @@ class _ReadingScreenState extends State<ReadingScreen> {
     if (document == null) {
       // 문서가 없을 때 샘플 텍스트로 TTS 실행
       String sampleText =
-          '샘플 문서입니다. 이것은 TTS 기능 테스트를 위한 예시 텍스트입니다. 읽기 속도 조절과 음성 출력이 정상적으로 작동하는지 확인할 수 있습니다.';
+          'This is a sample document. This is example text for testing the TTS feature. You can check if the reading speed adjustment and voice output work properly.';
       _speakExtractedText(sampleText);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('샘플 텍스트로 TTS 기능을 실행합니다.'), backgroundColor: Colors.blue),
+        const SnackBar(
+          content: Text('Running TTS feature with sample text.'),
+          backgroundColor: Colors.blue,
+        ),
       );
       return;
     }
@@ -446,7 +456,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('원본 파일을 픽셀 데이터로 변환하여 디바이스로 전송 중...'),
+        content: Text('Converting original file to pixel data and sending to device...'),
         backgroundColor: Colors.blue,
         duration: Duration(seconds: 3),
       ),
@@ -456,7 +466,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       final DocumentProcessingService processor = DocumentProcessingService();
 
       // 픽셀 모드에서도 샘플 텍스트로 TTS 실행
-      String sampleText = '픽셀 모드로 문서를 표시합니다. 원본 파일의 레이아웃과 이미지가 그대로 점자 디스플레이에 표시됩니다.';
+      String sampleText =
+          'Displaying document in pixel mode. The original file layout and images are shown as-is on the braille display.';
       await _speakExtractedText(sampleText);
 
       if (processor.isPdfFile(document!.filePath)) {
@@ -468,24 +479,27 @@ class _ReadingScreenState extends State<ReadingScreen> {
         // 각 페이지의 픽셀 데이터를 하드웨어로 전송
         for (int i = 0; i < multiPagePixelData.length; i++) {
           _simulateHardwareTransmission(
-            'PDF 페이지 ${i + 1} 픽셀 데이터 (${multiPagePixelData[i].length} pixels)',
+            'PDF page ${i + 1} pixel data (${multiPagePixelData[i].length} pixels)',
           );
         }
       } else if (processor.isImageFile(document!.filePath)) {
         // 이미지 파일을 픽셀 데이터로 변환
         final List<int> pixelData = await processor.convertImageToPixelData(document!.filePath);
-        _simulateHardwareTransmission('이미지 픽셀 데이터 (${pixelData.length} pixels)');
+        _simulateHardwareTransmission('Image pixel data (${pixelData.length} pixels)');
       } else {
-        throw Exception('지원하지 않는 파일 형식입니다.');
+        throw Exception('Unsupported file format.');
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('픽셀 데이터 변환 및 전송이 완료되었습니다.'), backgroundColor: Colors.green),
+        const SnackBar(
+          content: Text('Pixel data conversion and transfer completed.'),
+          backgroundColor: Colors.green,
+        ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('픽셀 데이터 변환 실패: $e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pixel data conversion failed: $e'), backgroundColor: Colors.red),
+      );
     }
   }
 
@@ -495,7 +509,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('텍스트 추출 및 점자로 변환하여 전송 중...'),
+        content: Text('Extracting text and converting to braille for transmission...'),
         backgroundColor: Colors.green,
         duration: Duration(seconds: 3),
       ),
@@ -512,11 +526,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
         // 이미지에서 OCR로 텍스트 추출
         extractedText = await processor.extractTextFromImage(document!.filePath);
       } else {
-        throw Exception('지원하지 않는 파일 형식입니다.');
+        throw Exception('Unsupported file format.');
       }
 
       if (extractedText.isEmpty) {
-        throw Exception('추출할 텍스트가 없습니다.');
+        throw Exception('No text found for extraction.');
       }
 
       // TTS로 일반 텍스트 읽기 (점자 변환 전 원본 텍스트)
@@ -526,18 +540,20 @@ class _ReadingScreenState extends State<ReadingScreen> {
       final String brailleText = processor.convertTextToBraille(extractedText);
 
       // 브라유 데이터를 하드웨어로 전송
-      _simulateHardwareTransmission('점자 데이터 (${brailleText.length} characters)');
+      _simulateHardwareTransmission('Braille data (${brailleText.length} characters)');
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('텍스트 추출 완료: ${extractedText.length} 글자가 점자로 변환되었습니다.'),
+          content: Text(
+            'Text extraction completed: ${extractedText.length} characters converted to braille.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('텍스트 추출 실패: $e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Text extraction failed: $e'), backgroundColor: Colors.red),
+      );
     }
   }
 
@@ -554,7 +570,8 @@ class _ReadingScreenState extends State<ReadingScreen> {
       String voiceType = prefs.getString('selectedVoiceType') ?? 'Male';
 
       if (voiceType != 'Robotic') {
-        double ttsRate = 0.2 + (_readingSpeed * 0.8); // 0.2 ~ 1.0 range
+        // 0.1-0.5 범위를 0.3-0.7 TTS 범위로 매핑
+        double ttsRate = 0.3 + ((_readingSpeed - 0.1) / 0.4 * 0.4); // 0.3 ~ 0.7 range
         await _flutterTts.setSpeechRate(ttsRate);
       }
 
@@ -574,10 +591,10 @@ class _ReadingScreenState extends State<ReadingScreen> {
         }
       }
     } catch (e) {
-      print('TTS 오류: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('음성 출력 오류: $e'), backgroundColor: Colors.red));
+      print('TTS error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Text-to-speech error: $e'), backgroundColor: Colors.red),
+      );
     }
   }
 
@@ -636,7 +653,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$dataType가 USB를 통해 하드웨어로 전송되었습니다.'),
+            content: Text('$dataType has been transmitted to the hardware via USB.'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -647,182 +664,299 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: _handleDoubleTap,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        bottomNavigationBar: const BottomNavigationComponent(currentRoute: '/reading'),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    const SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SafeArea(
+      child: GestureDetector(
+        onDoubleTap: _handleDoubleTap,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          bottomNavigationBar: const BottomNavigationComponent(currentRoute: '/reading'),
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        const SizedBox(height: 40),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // File title
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              child: Text(
-                                fileName,
-                                style: TextStyle(
-                                  fontFamily: 'Pretendard Variable',
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  height: 1.0,
+                            Column(
+                              children: [
+                                // File title
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.25,
+                                  child: Text(
+                                    fileName,
+                                    style: TextStyle(
+                                      fontFamily: 'Pretendard Variable',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      height: 1.0,
+                                    ),
+                                    overflow: TextOverflow.ellipsis, // 넘치면 ... 표시
+                                    maxLines: 1, // 한 줄로 제한
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis, // 넘치면 ... 표시
-                                maxLines: 1, // 한 줄로 제한
-                              ),
-                            ),
 
-                            const SizedBox(height: 26),
+                                const SizedBox(height: 26),
 
-                            // Device status
-                            Text(
-                              'Device status',
-                              style: TextStyle(
-                                fontFamily: 'Pretendard Variable',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                height: 1.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Start Reading button (centered)
-                        Center(
-                          child: GestureDetector(
-                            onTap: _startReading,
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.35,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: _isReading 
-                                    ? Colors.red 
-                                    : (Theme.of(context).brightness == Brightness.dark 
-                                        ? Colors.white 
-                                        : Colors.black),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  _isReading ? 'Stop Reading' : 'Start Reading',
+                                // Device status
+                                Text(
+                                  'Device status',
                                   style: TextStyle(
                                     fontFamily: 'Pretendard Variable',
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: _isReading 
-                                        ? Colors.white 
-                                        : (Theme.of(context).brightness == Brightness.dark 
-                                            ? Colors.black 
-                                            : Colors.white),
+                                    color: Theme.of(context).textTheme.bodyMedium?.color,
                                     height: 1.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Start Reading button (centered)
+                            Center(
+                              child: GestureDetector(
+                                onTap: _startReading,
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width * 0.35,
+                                  height: 44,
+                                  decoration: BoxDecoration(
+                                    color: _isReading
+                                        ? Colors.red
+                                        : (Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _isReading ? 'Stop Reading' : 'Start Reading',
+                                      style: TextStyle(
+                                        fontFamily: 'Pretendard Variable',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: _isReading
+                                            ? Colors.white
+                                            : (Theme.of(context).brightness == Brightness.dark
+                                                  ? Colors.black
+                                                  : Colors.white),
+                                        height: 1.0,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
 
-                    const SizedBox(height: 50),
+                        const SizedBox(height: 50),
 
-                    // Start Reading button and navigation buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Previous page button
-                        GestureDetector(
-                          onTap: _previousPage,
-                          child: Container(
-                            width: 142,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.dark 
-                                  ? Colors.grey.shade800 
-                                  : Colors.white,
-                              border: Border.all(
-                                color: Theme.of(context).brightness == Brightness.dark 
-                                    ? Colors.grey.shade600 
-                                    : const Color(0xFFB0B0B0),
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Previous page',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  height: 1.21,
+                        // Start Reading button and navigation buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Previous page button
+                            GestureDetector(
+                              onTap: _previousPage,
+                              child: Container(
+                                width: 142,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey.shade800
+                                      : Colors.white,
+                                  border: Border.all(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.grey.shade600
+                                        : const Color(0xFFB0B0B0),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 12),
-
-                        // Next page button
-                        GestureDetector(
-                          onTap: _nextPage,
-                          child: Container(
-                            width: 142,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).brightness == Brightness.dark 
-                                  ? Colors.grey.shade800 
-                                  : Colors.white,
-                              border: Border.all(
-                                color: Theme.of(context).brightness == Brightness.dark 
-                                    ? Colors.grey.shade600 
-                                    : const Color(0xFFB0B0B0),
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Next page',
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).textTheme.bodyMedium?.color,
-                                  height: 1.21,
+                                child: Center(
+                                  child: Text(
+                                    'Previous page',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      height: 1.21,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ),
+
+                            const SizedBox(width: 12),
+
+                            // Next page button
+                            GestureDetector(
+                              onTap: _nextPage,
+                              child: Container(
+                                width: 142,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.grey.shade800
+                                      : Colors.white,
+                                  border: Border.all(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.grey.shade600
+                                        : const Color(0xFFB0B0B0),
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Next page',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      height: 1.21,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 80),
+
+                        // Reading speed slider
+                        Center(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Reading speed',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                      height: 1.46,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pushNamed(context, '/reading-speed-control');
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? Colors.grey[800]
+                                            : Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Icon(
+                                        Icons.settings,
+                                        size: 20,
+                                        color: Theme.of(context).iconTheme.color,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              SizedBox(
+                                width: 256,
+                                height: 44,
+                                child: Stack(
+                                  children: [
+                                    // Background track
+                                    Positioned(
+                                      left: 0,
+                                      top: 16,
+                                      child: Container(
+                                        width: 256,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white.withOpacity(0.4)
+                                              : Colors.black.withOpacity(0.4),
+                                          borderRadius: BorderRadius.circular(80),
+                                        ),
+                                      ),
+                                    ),
+                                    // Active track
+                                    Positioned(
+                                      left: 0,
+                                      top: 16,
+                                      child: Container(
+                                        width: 256 * ((_readingSpeed - 0.1) / 0.4),
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          borderRadius: BorderRadius.circular(80),
+                                        ),
+                                      ),
+                                    ),
+                                    // Thumb
+                                    Positioned(
+                                      left: (256 - 44) * ((_readingSpeed - 0.1) / 0.4),
+                                      top: 0,
+                                      child: Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                    ),
+                                    // Invisible slider for interaction
+                                    SliderTheme(
+                                      data: SliderTheme.of(context).copyWith(
+                                        trackHeight: 44,
+                                        thumbShape: const RoundSliderThumbShape(
+                                          enabledThumbRadius: 22,
+                                        ),
+                                        overlayShape: SliderComponentShape.noOverlay,
+                                        activeTrackColor: Colors.transparent,
+                                        inactiveTrackColor: Colors.transparent,
+                                        thumbColor: Colors.transparent,
+                                      ),
+                                      child: Slider(
+                                        value: _readingSpeed,
+                                        min: 0.1,
+                                        max: 0.5,
+                                        onChanged: _onReadingSpeedChanged,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
 
-                    const SizedBox(height: 80),
+                        const SizedBox(height: 40),
 
-                    // Reading speed slider
-                    Center(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                        // Voice guidance toggle
+                        Center(
+                          child: Column(
                             children: [
                               Text(
-                                'Reading speed',
+                                'graphics',
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 18,
@@ -832,199 +966,108 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.pushNamed(context, '/reading-speed-control');
+                                  setState(() {
+                                    _toPixel = !_toPixel;
+                                  });
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.all(6),
+                                  width: 120,
+                                  height: 60,
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).brightness == Brightness.dark 
-                                        ? Colors.grey[800] 
-                                        : Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(6),
+                                    color: _toPixel
+                                        ? (Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black)
+                                        : Colors.grey,
+                                    borderRadius: BorderRadius.circular(80),
                                   ),
-                                  child: Icon(
-                                    Icons.settings, 
-                                    size: 20, 
-                                    color: Theme.of(context).iconTheme.color,
+                                  child: Stack(
+                                    children: [
+                                      AnimatedPositioned(
+                                        duration: const Duration(milliseconds: 200),
+                                        left: _toPixel ? 68 : 8,
+                                        top: 8,
+                                        child: Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: _toPixel
+                                                ? (Theme.of(context).brightness == Brightness.dark
+                                                      ? Colors.black
+                                                      : Colors.white)
+                                                : Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                _toPixel ? 'Pixel Mode' : 'Braille Text Mode',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: _toPixel ? Colors.blue : Colors.green,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: 256,
-                            height: 44,
-                            child: Stack(
-                              children: [
-                                // Background track
-                                Positioned(
-                                  left: 0,
-                                  top: 16,
-                                  child: Container(
-                                    width: 256,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).brightness == Brightness.dark 
-                                          ? Colors.white.withOpacity(0.4) 
-                                          : Colors.black.withOpacity(0.4),
-                                      borderRadius: BorderRadius.circular(80),
-                                    ),
-                                  ),
-                                ),
-                                // Active track
-                                Positioned(
-                                  left: 0,
-                                  top: 16,
-                                  child: Container(
-                                    width: 256 * _readingSpeed,
-                                    height: 12,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).brightness == Brightness.dark 
-                                          ? Colors.white 
-                                          : Colors.black,
-                                      borderRadius: BorderRadius.circular(80),
-                                    ),
-                                  ),
-                                ),
-                                // Thumb
-                                Positioned(
-                                  left: (256 - 44) * _readingSpeed,
-                                  top: 0,
-                                  child: Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).brightness == Brightness.dark 
-                                          ? Colors.white 
-                                          : Colors.black,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                                // Invisible slider for interaction
-                                SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    trackHeight: 44,
-                                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 22),
-                                    overlayShape: SliderComponentShape.noOverlay,
-                                    activeTrackColor: Colors.transparent,
-                                    inactiveTrackColor: Colors.transparent,
-                                    thumbColor: Colors.transparent,
-                                  ),
-                                  child: Slider(
-                                    value: _readingSpeed,
-                                    onChanged: _onReadingSpeedChanged,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 80),
-
-                    // Voice guidance toggle
-                    Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            'graphics',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Theme.of(context).textTheme.bodyLarge?.color,
-                              height: 1.46,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _toPixel = !_toPixel;
-                              });
-                            },
-                            child: Container(
-                              width: 120,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: _toPixel 
-                                    ? (Theme.of(context).brightness == Brightness.dark 
-                                        ? Colors.white 
-                                        : Colors.black)
-                                    : Colors.grey,
-                                borderRadius: BorderRadius.circular(80),
-                              ),
-                              child: Stack(
-                                children: [
-                                  AnimatedPositioned(
-                                    duration: const Duration(milliseconds: 200),
-                                    left: _toPixel ? 68 : 8,
-                                    top: 8,
-                                    child: Container(
-                                      width: 44,
-                                      height: 44,
-                                      decoration: BoxDecoration(
-                                        color: _toPixel 
-                                            ? (Theme.of(context).brightness == Brightness.dark 
-                                                ? Colors.black 
-                                                : Colors.white)
-                                            : Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            _toPixel ? 'Pixel Mode' : 'Braille Text Mode',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: _toPixel ? Colors.blue : Colors.green,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Voice Control Button
-                    Center(
-                      child: ElevatedButton.icon(
-                        onPressed: _startVoiceInstructions,
-                        icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                        label: Text(_isListening ? 'Listening...' : 'Voice Command'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _isListening ? Colors.red : Colors.blue,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                      ),
-                    ),
 
-                    const SizedBox(height: 40),
-                  ],
+                        const SizedBox(height: 40),
+
+                        // Voice Control Button
+                        Center(
+                          child: ElevatedButton.icon(
+                            onPressed: _startVoiceInstructions,
+                            icon: Icon(
+                              _isListening ? Icons.mic : Icons.mic_none,
+                              color: _isListening
+                                  ? Colors.white
+                                  : (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white),
+                            ),
+                            label: Text(
+                              _isListening ? 'Listening...' : 'Voice Command',
+                              style: TextStyle(
+                                color: _isListening
+                                    ? Colors.white
+                                    : (Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.black
+                                          : Colors.white),
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _isListening
+                                  ? Colors.red
+                                  : (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
-    ),
-    ); // GestureDetector의 닫는 괄호
+      ), // GestureDetector의 닫는 괄호
+    );
   }
 
   // TTS 읽기 중지

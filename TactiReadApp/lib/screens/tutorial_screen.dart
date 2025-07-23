@@ -39,19 +39,27 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   children: [
                     Text(
                       '${_currentPage + 1} / 5',
-                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     Text(
                       '${((_currentPage + 1) / 5 * 100).round()}%',
-                      style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 LinearProgressIndicator(
                   value: (_currentPage + 1) / 5,
-                  backgroundColor: Colors.grey.shade300,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue.shade600),
+                  backgroundColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[700]
+                      : Colors.grey.shade300,
+                  valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
                 ),
               ],
             ),
@@ -65,13 +73,13 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 제목
-                  const Center(
+                  Center(
                     child: Text(
                       'Tutorial',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.titleLarge?.color,
                       ),
                     ),
                   ),
@@ -127,14 +135,24 @@ class _TutorialScreenState extends State<TutorialScreen> {
               width: 127,
               height: 51,
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: const Color(0xFFB0B0B0)),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]
+                    : Colors.white,
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[600]!
+                      : const Color(0xFFB0B0B0),
+                ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Start',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
                 ),
               ),
             ),
@@ -151,14 +169,24 @@ class _TutorialScreenState extends State<TutorialScreen> {
               width: 127,
               height: 51,
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: const Color(0xFFB0B0B0)),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[800]
+                    : Colors.white,
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[600]!
+                      : const Color(0xFFB0B0B0),
+                ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   'Skip',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Colors.black),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                  ),
                 ),
               ),
             ),
@@ -193,18 +221,22 @@ class _TutorialScreenState extends State<TutorialScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Home & Library',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Learn how to navigate your digital library, upload files, and manage your documents effectively.',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   height: 1.21,
                 ),
               ),
@@ -240,8 +272,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
             _currentPage = 1;
           });
         },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+        child: Icon(
+          Icons.arrow_forward,
+          size: 20,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+        ),
       ),
     );
   }
@@ -251,7 +289,9 @@ class _TutorialScreenState extends State<TutorialScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F2),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : const Color(0xFFF2F2F2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -259,15 +299,19 @@ class _TutorialScreenState extends State<TutorialScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Theme.of(context).textTheme.titleMedium?.color,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             description,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF666666),
+              color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.8),
               height: 1.21,
             ),
           ),
@@ -284,18 +328,22 @@ class _TutorialScreenState extends State<TutorialScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'File Upload & Management',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Discover multiple ways to add documents to your library and organize them efficiently.',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   height: 1.21,
                 ),
               ),
@@ -328,8 +376,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
             _currentPage = 2;
           });
         },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+        child: Icon(
+          Icons.arrow_forward,
+          size: 20,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+        ),
       ),
     );
   }
@@ -342,18 +396,22 @@ class _TutorialScreenState extends State<TutorialScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Reading & Device Control',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Master braille display connection and reading controls for optimal accessibility experience.',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   height: 1.21,
                 ),
               ),
@@ -386,8 +444,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
             _currentPage = 3;
           });
         },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+        child: Icon(
+          Icons.arrow_forward,
+          size: 20,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+        ),
       ),
     );
   }
@@ -400,18 +464,22 @@ class _TutorialScreenState extends State<TutorialScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Settings',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Customize your accessibility preferences and app behavior for the best personal experience.',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   height: 1.21,
                 ),
               ),
@@ -444,8 +512,14 @@ class _TutorialScreenState extends State<TutorialScreen> {
             _currentPage = 4;
           });
         },
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.arrow_forward, size: 20, color: Colors.white),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+        child: Icon(
+          Icons.arrow_forward,
+          size: 20,
+          color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+        ),
       ),
     );
   }
@@ -458,18 +532,22 @@ class _TutorialScreenState extends State<TutorialScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Help & Support',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400, color: Colors.black),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
               const SizedBox(height: 24),
 
-              const Text(
+              Text(
                 'Access comprehensive help resources, tutorials, and support channels when you need assistance.',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   height: 1.21,
                 ),
               ),
@@ -508,10 +586,16 @@ class _TutorialScreenState extends State<TutorialScreen> {
             const SnackBar(content: Text('Tutorial completed!'), backgroundColor: Colors.green),
           );
         },
-        backgroundColor: Colors.black,
-        label: const Text(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+        label: Text(
           'DONE',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white,
+          ),
         ),
       ),
     );

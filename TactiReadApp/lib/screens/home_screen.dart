@@ -50,11 +50,11 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       } else if (mounted) {
         // 로그인되지 않은 경우 로그인 화면으로 리다이렉트
-        Navigator.pushReplacementNamed(context, '/sign_in');
+        Navigator.pushNamed(context, '/sign_in');
       }
     } catch (e) {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/sign_in');
+        Navigator.pushNamed(context, '/sign_in');
       }
     }
   }
@@ -69,9 +69,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       List<Document> documents = await _databaseHelper.getDocumentsByUserId(currentUser!.id!);
-      print('DB에서 로드된 문서 수: ${documents.length}');
+      print('Number of documents loaded from DB: ${documents.length}');
       for (var doc in documents) {
-        print('문서: ${doc.fileName} (ID: ${doc.id})');
+        print('Document: ${doc.fileName} (ID: ${doc.id})');
       }
 
       setState(() {
@@ -81,14 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       _applyFilter(selectedFilter);
     } catch (e) {
-      print('문서 로드 오류: $e');
+      print('Error loading documents: $e');
       setState(() {
         isLoading = false;
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('문서 로드 중 오류가 발생했습니다: ${e.toString()}'),
+            content: Text('An error occurred while loading documents: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${document.fileName}이 삭제되었습니다.'),
+            content: Text('${document.fileName} has been deleted.'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
           ),
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('삭제 중 오류가 발생했습니다: ${e.toString()}'),
+            content: Text('An error occurred while deleting: ${e.toString()}'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -135,17 +135,19 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('문서 삭제'),
-        content: Text('${document.fileName}을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.'),
+        title: const Text('Delete Document'),
+        content: Text(
+          'Are you sure you want to delete ${document.fileName}?\nThis action cannot be undone.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _deleteDocument(document);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('삭제', style: TextStyle(color: Colors.white)),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -234,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       List<Document> documents;
-      print('필터 적용: $filter');
+      print('Applying filter: $filter');
 
       switch (filter) {
         case 'PDF':
@@ -256,14 +258,14 @@ class _HomeScreenState extends State<HomeScreen> {
           documents = await _databaseHelper.getDocumentsByUserId(currentUser!.id!);
       }
 
-      print('필터 적용 후 문서 수: ${documents.length}');
+      print('Number of documents after applying filter: ${documents.length}');
 
       setState(() {
         filteredDocuments = documents;
         isLoading = false;
       });
     } catch (e) {
-      print('필터 적용 오류: $e');
+      print('Error applying filter: $e');
       setState(() {
         isLoading = false;
       });
@@ -293,8 +295,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
 
         if (result.success) {
-          // 디버그 로그 추가
-          print('업로드 성공, 문서 목록 새로고침 시작');
+          // Debug log added
+          print('Upload successful, refreshing document list started');
 
           // 문서 목록 새로고침
           await _loadDocuments();
@@ -302,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 필터 재적용
           _applyFilter(selectedFilter);
 
-          print('문서 목록 새로고침 완료, 현재 문서 수: ${filteredDocuments.length}');
+          print('Document list refreshed, current document count: ${filteredDocuments.length}');
         }
       }
     } catch (e) {
@@ -313,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('파일 업로드 중 오류가 발생했습니다: ${e.toString()}'),
+            content: Text('An error occurred while uploading the file: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -344,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('파일을 여는 중 오류가 발생했습니다: ${e.toString()}'),
+            content: Text('An error occurred while opening the file: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -356,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isVoiceAssistEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('음성 검색을 시작합니다...'),
+          content: Text('Starting voice search...'),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 2),
         ),
@@ -365,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('먼저 Voice Assist를 활성화해주세요.'),
+          content: Text('Please enable Voice Assist first.'),
           backgroundColor: Colors.orange,
           duration: Duration(seconds: 2),
         ),
@@ -397,58 +399,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 35),
-
-            // Voice Assist Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 41),
-              child: Column(
-                children: [
-                  Text(
-                    'voice assist',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                      height: 1.46,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Voice Assist Toggle Button
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isVoiceAssistEnabled = !isVoiceAssistEnabled;
-                      });
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isVoiceAssistEnabled
-                                ? 'Voice Assist가 활성화되었습니다.'
-                                : 'Voice Assist가 비활성화되었습니다.',
-                          ),
-                          backgroundColor: isVoiceAssistEnabled ? Colors.green : Colors.grey,
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: isVoiceAssistEnabled ? Colors.green : Colors.black,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(child: Icon(Icons.volume_up, color: Colors.white, size: 40)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 73),
+            const SizedBox(height: 50),
 
             // Search Bar
             Padding(
@@ -482,7 +433,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w400,
-                          color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                         ),
                       ),
                     ),
@@ -504,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 39),
+            const SizedBox(height: 20),
 
             // Document List Section
             Expanded(
@@ -524,48 +477,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Upload Button
-                    GestureDetector(
-                      onTap: _uploadFile,
-                      child: Container(
-                        width: 141,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, 0),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.upload_file, color: Colors.white, size: 20),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Upload',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
                     // Document List Container
                     Expanded(
                       child: Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF2C2C2E)
+                              : Colors.black,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
@@ -579,8 +498,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 142,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(color: const Color(0xFFB0B0B0)),
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? const Color(0xFF3C3C3E)
+                                        : Colors.white,
+                                    border: Border.all(
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? const Color(0xFF48484A)
+                                          : const Color(0xFFB0B0B0),
+                                    ),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Row(
@@ -588,17 +513,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                     children: [
                                       Text(
                                         selectedFilter,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400,
-                                          color: Colors.black,
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
                                           height: 1.46,
                                         ),
                                       ),
                                       const SizedBox(width: 8),
-                                      const Icon(
+                                      Icon(
                                         Icons.keyboard_arrow_down,
-                                        color: Colors.black,
+                                        color: Theme.of(context).brightness == Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                         size: 24,
                                       ),
                                     ],
@@ -614,12 +543,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: CircularProgressIndicator(color: Colors.white),
                                       )
                                     : filteredDocuments.isEmpty
-                                    ? const Center(
+                                    ? Center(
                                         child: Text(
-                                          '문서가 없습니다.\n위의 Upload 버튼을 눌러 파일을 업로드하세요.',
+                                          'No documents found.\nPlease tap the Upload button above to upload a file.',
                                           style: TextStyle(
                                             fontSize: 16,
-                                            color: Colors.white,
+                                            color: Theme.of(context).brightness == Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                             height: 1.5,
                                           ),
                                           textAlign: TextAlign.center,
@@ -635,6 +566,55 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 40),
+
+                    // Upload Button
+                    GestureDetector(
+                      onTap: _uploadFile,
+                      child: Container(
+                        width: double.infinity,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF1E1E1E)
+                              : Colors.black,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.black.withOpacity(0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 0),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.upload_file,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Upload',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

@@ -19,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 37),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Column(
                   children: [
                     const SizedBox(height: 43), // 피그마에서 타이틀까지의 거리
@@ -38,298 +38,203 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                     const SizedBox(height: 30),
 
-                    // Main settings container with proper spacing
-                    Container(
-                      width: 302,
-                      child: Column(
-                        children: [
-                          // Display section
-                          Column(
+                    // Main settings list
+                    Column(
+                      children: [
+                        // Display section
+                        _buildSectionHeader('Display'),
+                        Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Column(
                             children: [
-                              // Display header
-                              Container(
-                                width: double.infinity,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4E4E4E),
-                                  borderRadius: BorderRadius.circular(10),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.dark_mode,
+                                  color: Theme.of(context).primaryColor,
                                 ),
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 23, top: 13),
-                                  child: Text(
-                                    'Display',
-                                    style: TextStyle(
-                                      fontFamily: 'Pretendard Variable',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      height: 1.0,
-                                    ),
+                                title: const Text(
+                                  'Dark mode',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Dark mode link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/display-settings');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Dark mode',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.contrast,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                title: const Text(
+                                  'High contrast mode',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // High contrast mode link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/display-settings');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'High contrast mode',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ],
                           ),
+                        ),
 
-                          const SizedBox(height: 41),
+                        const SizedBox(height: 32),
 
-                          // Audio section
-                          Column(
+                        // Audio section
+                        _buildSectionHeader('Audio'),
+                        Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Column(
                             children: [
-                              // Audio header
-                              Container(
-                                width: double.infinity,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4E4E4E),
-                                  borderRadius: BorderRadius.circular(10),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.record_voice_over,
+                                  color: Theme.of(context).primaryColor,
                                 ),
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 23, top: 13),
-                                  child: Text(
-                                    'Audio',
-                                    style: TextStyle(
-                                      fontFamily: 'Pretendard Variable',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      height: 1.0,
-                                    ),
+                                title: const Text(
+                                  'Voice selection',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Voice selection link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/voice-selection');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Voice selection',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: Icon(Icons.speed, color: Theme.of(context).primaryColor),
+                                title: const Text(
+                                  'Reading speed control',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Reading speed control link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/reading-speed-control');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Reading speed control',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ],
                           ),
+                        ),
 
-                          const SizedBox(height: 41),
+                        const SizedBox(height: 32),
 
-                          // Interface section
-                          Column(
+                        // Interface section
+                        _buildSectionHeader('Interface'),
+                        Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Column(
                             children: [
-                              // Interface header
-                              Container(
-                                width: double.infinity,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4E4E4E),
-                                  borderRadius: BorderRadius.circular(10),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.volume_up,
+                                  color: Theme.of(context).primaryColor,
                                 ),
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 23, top: 13),
-                                  child: Text(
-                                    'Interface',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      height: 1.21,
-                                    ),
+                                title: const Text(
+                                  'Audio cue toggle',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Audio cue toggle link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/audio-cue-toggle');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Audio cue toggle',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: Icon(
+                                  Icons.touch_app,
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                title: const Text(
+                                  'Double-tap shortcuts',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Double-tap shortcuts link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/double-tap-shortcuts');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Double-tap shortcuts',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ],
                           ),
+                        ),
 
-                          const SizedBox(height: 41),
+                        const SizedBox(height: 32),
 
-                          // Account section
-                          Column(
+                        // Account section
+                        _buildSectionHeader('Account'),
+                        Card(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          child: Column(
                             children: [
-                              // Account header
-                              Container(
-                                width: double.infinity,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF4E4E4E),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.only(left: 23, top: 13),
-                                  child: Text(
-                                    'Account',
-                                    style: TextStyle(
-                                      fontFamily: 'Pretendard Variable',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white,
-                                      height: 1.0,
-                                    ),
+                              ListTile(
+                                leading: Icon(Icons.person, color: Theme.of(context).primaryColor),
+                                title: const Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Profile link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right),
                                 onTap: () {
                                   Navigator.pushNamed(context, '/profile-settings');
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Profile',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: const Icon(Icons.logout, color: Colors.red),
+                                title: const Text(
+                                  'Logout',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              // Logout link
-                              GestureDetector(
+                                trailing: const Icon(Icons.chevron_right, color: Colors.red),
                                 onTap: () {
                                   _showLogoutDialog();
                                 },
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Logout',
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                                      height: 1.46,
-                                    ),
-                                  ),
-                                ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 22), // 피그마 디자인의 하단 패딩
@@ -346,14 +251,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: TextStyle(
+            fontFamily: 'Pretendard Variable',
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).textTheme.titleMedium?.color,
+            height: 1.2,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showLogoutDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('정말 로그아웃하시겠습니까?'),
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
@@ -364,7 +288,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('로그아웃되었습니다.'),
+                  content: Text('Logged out successfully.'),
                   backgroundColor: Colors.red,
                   duration: Duration(seconds: 2),
                 ),
@@ -373,7 +297,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // 로그인 화면으로 이동
               Navigator.pushNamedAndRemoveUntil(context, '/sign_in', (route) => false);
             },
-            child: const Text('로그아웃'),
+            child: const Text('Logout'),
           ),
         ],
       ),

@@ -41,7 +41,7 @@ class AuthService {
     try {
       // 이메일 형식 검증
       if (!_isValidEmail(email)) {
-        return AuthResult(success: false, message: '유효한 이메일 주소를 입력해주세요.');
+        return AuthResult(success: false, message: 'Please enter a valid email address.');
       }
 
       // 비밀번호 강도 검증
@@ -52,13 +52,13 @@ class AuthService {
 
       // 이름 검증
       if (name.trim().length < 2) {
-        return AuthResult(success: false, message: '이름은 2자 이상이어야 합니다.');
+        return AuthResult(success: false, message: 'Name must be at least 2 characters long.');
       }
 
       // 이메일 중복 체크
       bool emailExistsResult = await _databaseHelper.emailExists(email.toLowerCase());
       if (emailExistsResult) {
-        return AuthResult(success: false, message: '이미 사용 중인 이메일입니다.');
+        return AuthResult(success: false, message: 'Email is already in use.');
       }
 
       // 비밀번호 해시화
@@ -84,13 +84,13 @@ class AuthService {
         // 생성된 사용자 정보 가져오기
         _currentUser = await _databaseHelper.getUserById(userId);
 
-        return AuthResult(success: true, message: '회원가입이 완료되었습니다.', user: _currentUser);
+        return AuthResult(success: true, message: 'Registration completed successfully.', user: _currentUser);
       } else {
-        return AuthResult(success: false, message: '회원가입 중 오류가 발생했습니다.');
+        return AuthResult(success: false, message: 'An error occurred during registration.');
       }
     } catch (e) {
       print('SignUp Error: $e');
-      return AuthResult(success: false, message: '회원가입 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during registration.');
     }
   }
 
@@ -101,13 +101,13 @@ class AuthService {
       User? user = await _databaseHelper.getUserByEmail(email.toLowerCase());
 
       if (user == null) {
-        return AuthResult(success: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.');
+        return AuthResult(success: false, message: 'Invalid email or password.');
       }
 
       // 비밀번호 검증
       List<String> passwordParts = user.password.split(':');
       if (passwordParts.length != 2) {
-        return AuthResult(success: false, message: '계정 정보에 오류가 있습니다.');
+        return AuthResult(success: false, message: 'Account information is invalid.');
       }
 
       String salt = passwordParts[0];
@@ -115,7 +115,7 @@ class AuthService {
       String inputHash = _hashPassword(password, salt);
 
       if (inputHash != storedHash) {
-        return AuthResult(success: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.');
+        return AuthResult(success: false, message: 'Invalid email or password.');
       }
 
       // 로그인 성공
@@ -127,10 +127,10 @@ class AuthService {
       // 마지막 로그인 시간 업데이트
       await _databaseHelper.updateLastLogin(user.id!);
 
-      return AuthResult(success: true, message: '로그인되었습니다.', user: _currentUser);
+      return AuthResult(success: true, message: 'Logged in successfully.', user: _currentUser);
     } catch (e) {
       print('SignIn Error: $e');
-      return AuthResult(success: false, message: '로그인 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during login.');
     }
   }
 
@@ -152,7 +152,7 @@ class AuthService {
       User? user = await _databaseHelper.getUserByEmail(email.toLowerCase());
 
       if (user == null) {
-        return AuthResult(success: false, message: '해당 이메일로 등록된 계정을 찾을 수 없습니다.');
+        return AuthResult(success: false, message: 'No account found with that email address.');
       }
 
       // 새 비밀번호 검증
@@ -171,13 +171,13 @@ class AuthService {
       int result = await _databaseHelper.updateUser(updatedUser);
 
       if (result > 0) {
-        return AuthResult(success: true, message: '비밀번호가 재설정되었습니다.');
+        return AuthResult(success: true, message: 'Password has been reset successfully.');
       } else {
-        return AuthResult(success: false, message: '비밀번호 재설정 중 오류가 발생했습니다.');
+        return AuthResult(success: false, message: 'An error occurred during password reset.');
       }
     } catch (e) {
       print('Reset Password Error: $e');
-      return AuthResult(success: false, message: '비밀번호 재설정 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during password reset.');
     }
   }
 
@@ -194,11 +194,11 @@ class AuthService {
   // 비밀번호 강도 검증
   String? _validatePassword(String password) {
     if (password.length < 6) {
-      return '비밀번호는 6자 이상이어야 합니다.';
+      return 'Password must be at least 6 characters long.';
     }
 
     if (password.length > 50) {
-      return '비밀번호는 50자 이하여야 합니다.';
+      return 'Password must be 50 characters or less.';
     }
 
     // 기본적인 보안 요구사항
@@ -206,7 +206,7 @@ class AuthService {
     bool hasDigit = password.contains(RegExp(r'[0-9]'));
 
     if (!hasLetter || !hasDigit) {
-      return '비밀번호는 영문자와 숫자를 포함해야 합니다.';
+      return 'Password must contain both letters and numbers.';
     }
 
     return null;
@@ -216,33 +216,33 @@ class AuthService {
   Future<AuthResult> deleteAccount() async {
     try {
       if (_currentUser == null) {
-        return AuthResult(success: false, message: '로그인이 필요합니다.');
+        return AuthResult(success: false, message: 'Login is required.');
       }
 
       int result = await _databaseHelper.deleteUser(_currentUser!.id!);
 
       if (result > 0) {
         _currentUser = null;
-        return AuthResult(success: true, message: '계정이 삭제되었습니다.');
+        return AuthResult(success: true, message: 'Account has been deleted successfully.');
       } else {
-        return AuthResult(success: false, message: '계정 삭제 중 오류가 발생했습니다.');
+        return AuthResult(success: false, message: 'An error occurred during account deletion.');
       }
     } catch (e) {
       print('Delete Account Error: $e');
-      return AuthResult(success: false, message: '계정 삭제 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during account deletion.');
     }
   }
 
   // 이름 검증
   String? _validateName(String name) {
     if (name.trim().isEmpty) {
-      return '이름을 입력해주세요.';
+      return 'Please enter your name.';
     }
     if (name.trim().length < 2) {
-      return '이름은 최소 2자 이상이어야 합니다.';
+      return 'Name must be at least 2 characters long.';
     }
     if (name.trim().length > 50) {
-      return '이름은 50자를 초과할 수 없습니다.';
+      return 'Name must be 50 characters or less.';
     }
     return null;
   }
@@ -265,13 +265,13 @@ class AuthService {
           _currentUser = _currentUser!.copyWith(name: newName.trim());
         }
 
-        return AuthResult(success: true, message: '이름이 성공적으로 업데이트되었습니다.');
+        return AuthResult(success: true, message: 'Name has been updated successfully.');
       } else {
-        return AuthResult(success: false, message: '이름 업데이트에 실패했습니다.');
+        return AuthResult(success: false, message: 'Failed to update name.');
       }
     } catch (e) {
       print('Update Name Error: $e');
-      return AuthResult(success: false, message: '이름 업데이트 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during name update.');
     }
   }
 
@@ -293,13 +293,13 @@ class AuthService {
       bool success = await _databaseHelper.updateUserPassword(userId, saltedPassword);
 
       if (success) {
-        return AuthResult(success: true, message: '비밀번호가 성공적으로 업데이트되었습니다.');
+        return AuthResult(success: true, message: 'Password has been updated successfully.');
       } else {
-        return AuthResult(success: false, message: '비밀번호 업데이트에 실패했습니다.');
+        return AuthResult(success: false, message: 'Failed to update password.');
       }
     } catch (e) {
       print('Update Password Error: $e');
-      return AuthResult(success: false, message: '비밀번호 업데이트 중 오류가 발생했습니다.');
+      return AuthResult(success: false, message: 'An error occurred during password update.');
     }
   }
 }

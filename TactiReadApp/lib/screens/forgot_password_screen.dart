@@ -24,7 +24,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('이메일 주소를 입력해주세요.'), backgroundColor: Colors.red));
+      ).showSnackBar(const SnackBar(content: Text('Please enter your email address.'), backgroundColor: Colors.red));
       return;
     }
 
@@ -53,7 +53,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('임시 비밀번호가 이메일로 전송되었습니다. 로그인 후 비밀번호를 변경해주세요.'),
+              content: Text('A temporary password has been sent to your email. Please log in and change your password.'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 5),
             ),
@@ -71,7 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('비밀번호 재설정 중 오류가 발생했습니다.'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('An error occurred during password reset.'), backgroundColor: Colors.red),
         );
       }
     }

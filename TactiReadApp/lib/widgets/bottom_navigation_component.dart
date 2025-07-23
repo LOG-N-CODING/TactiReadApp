@@ -2,69 +2,67 @@ import 'package:flutter/material.dart';
 
 class BottomNavigationComponent extends StatelessWidget {
   final String? currentRoute;
-  
-  const BottomNavigationComponent({
-    super.key,
-    this.currentRoute,
-  });
+
+  const BottomNavigationComponent({super.key, this.currentRoute});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 83,
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
-      child: Column(
+      height: 90,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).dividerColor.withOpacity(0.2), width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            children: [
-              // Home 버튼
-              _buildNavButton(
-                context,
-                label: 'Home',
-                route: '/home',
-                width: 65.86,
-                isActive: currentRoute == '/home',
-              ),
-              const Spacer(),
-              // Reading 버튼
-              _buildNavButton(
-                context,
-                label: 'Reading',
-                route: '/reading',
-                width: 84,
-                isActive: currentRoute == '/reading',
-              ),
-              const Spacer(),
-              // Settings 버튼
-              _buildNavButton(
-                context,
-                label: 'Settings',
-                route: '/settings',
-                width: 84,
-                isActive: currentRoute == '/settings',
-              ),
-              const Spacer(),
-              // Help 버튼
-              _buildNavButton(
-                context,
-                label: 'Help',
-                route: '/help',
-                width: 65.86,
-                isActive: currentRoute == '/help',
-              ),
-            ],
+          // Home 버튼
+          _buildNavButton(
+            context,
+            label: 'Home',
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            route: '/home',
+            isActive: currentRoute == '/home',
           ),
-          const SizedBox(height: 15),
-          // 하단 바
-          Container(
-            width: 135,
-            height: 5,
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark 
-                  ? Colors.white 
-                  : Colors.black,
-              borderRadius: BorderRadius.circular(17),
-            ),
+          // Reading 버튼
+          _buildNavButton(
+            context,
+            label: 'Reading',
+            icon: Icons.menu_book_outlined,
+            activeIcon: Icons.menu_book,
+            route: '/reading',
+            isActive: currentRoute == '/reading',
+          ),
+          // Library 버튼 (새로 추가)
+          _buildNavButton(
+            context,
+            label: 'Library',
+            icon: Icons.library_books_outlined,
+            activeIcon: Icons.library_books,
+            route: '/library',
+            isActive: currentRoute == '/library',
+          ),
+          // Settings 버튼
+          _buildNavButton(
+            context,
+            label: 'Settings',
+            icon: Icons.settings_outlined,
+            activeIcon: Icons.settings,
+            route: '/settings',
+            isActive: currentRoute == '/settings',
+          ),
+          // Help 버튼
+          _buildNavButton(
+            context,
+            label: 'Help',
+            icon: Icons.help_outline,
+            activeIcon: Icons.help,
+            route: '/help',
+            isActive: currentRoute == '/help',
           ),
         ],
       ),
@@ -74,53 +72,53 @@ class BottomNavigationComponent extends StatelessWidget {
   Widget _buildNavButton(
     BuildContext context, {
     required String label,
+    required IconData icon,
+    required IconData activeIcon,
     required String route,
-    required double width,
     bool isActive = false,
   }) {
-    return GestureDetector(
-      onTap: () {
-        if (currentRoute != route) {
-          Navigator.pushReplacementNamed(context, route);
-        }
-      },
-      child: Container(
-        width: width,
-        height: 43,
-        decoration: BoxDecoration(
-          color: isActive 
-              ? (Theme.of(context).brightness == Brightness.dark 
-                  ? Colors.white 
-                  : Colors.black)
-              : (Theme.of(context).brightness == Brightness.dark 
-                  ? Colors.grey.shade800 
-                  : Colors.white),
-          border: Border.all(
-            color: isActive 
-                ? (Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white 
-                    : Colors.black)
-                : (Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.grey.shade600 
-                    : const Color(0xFFB0B0B0)),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          if (currentRoute != route) {
+            Navigator.pushReplacementNamed(context, route);
+          }
+        },
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: isActive
+                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: isActive 
-                  ? (Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.black 
-                      : Colors.white)
-                  : (Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.white 
-                      : Colors.black),
-              fontFamily: 'Inter',
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isActive ? activeIcon : icon,
+                size: 24,
+                color: isActive
+                    ? Theme.of(context).colorScheme.primary
+                    : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade400
+                          : Colors.grey.shade600),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  color: isActive
+                      ? Theme.of(context).colorScheme.primary
+                      : (Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade600),
+                  fontFamily: 'Inter',
+                ),
+              ),
+            ],
           ),
         ),
       ),

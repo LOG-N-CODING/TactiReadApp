@@ -45,7 +45,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('파일 "${file.name}"이 선택되었습니다. 처리 방식을 선택해주세요.'),
+            content: Text('The file "${file.name}" has been selected. Please choose a processing method.'),
             backgroundColor: Colors.blue,
             duration: const Duration(seconds: 2),
           ),
@@ -54,7 +54,7 @@ class _UploadScreenState extends State<UploadScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('파일 선택 중 오류가 발생했습니다: $e'),
+          content: Text('An error occurred while selecting a file: $e'),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
         ),
@@ -77,7 +77,7 @@ class _UploadScreenState extends State<UploadScreen> {
     if (filePath == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('파일을 먼저 선택해주세요.'), backgroundColor: Colors.red));
+      ).showSnackBar(const SnackBar(content: Text('Please select a file first.'), backgroundColor: Colors.red));
       return;
     }
 
@@ -87,7 +87,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (currentUser == null) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('로그인이 필요합니다.'), backgroundColor: Colors.red));
+        ).showSnackBar(const SnackBar(content: Text('Login is required.'), backgroundColor: Colors.red));
         return;
       }
 
@@ -106,8 +106,8 @@ class _UploadScreenState extends State<UploadScreen> {
             SnackBar(
               content: Text(
                 processingType == 'display_as_is'
-                    ? '파일이 원본 형태로 저장되었습니다.'
-                    : '파일이 텍스트 추출 모드로 저장되었습니다.',
+                    ? 'The file has been saved as is.'
+                    : 'The file has been saved in text extraction mode.',
               ),
               backgroundColor: Colors.green,
             ),
@@ -120,7 +120,7 @@ class _UploadScreenState extends State<UploadScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('파일 저장 중 오류가 발생했습니다: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('An error occurred while saving the file: $e'), backgroundColor: Colors.red),
         );
       }
     }
