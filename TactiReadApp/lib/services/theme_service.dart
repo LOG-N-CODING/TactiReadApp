@@ -56,30 +56,40 @@ class ThemeService extends ChangeNotifier {
   ThemeData _lightTheme() {
     return ThemeData(
       brightness: Brightness.light,
-      primarySwatch: Colors.grey,
-      scaffoldBackgroundColor: Colors.white,
+      primaryColor: Colors.blue,
+      colorScheme: ColorScheme.light(
+        primary: Colors.blue,
+        secondary: Colors.blueAccent,
+        background: Colors.blue[50]!,
+        surface: Colors.white,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onBackground: Colors.blue,
+        onSurface: Colors.blue,
+      ),
+      scaffoldBackgroundColor: Colors.blue[50],
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: Colors.black, fontSize: 18),
-        bodyMedium: TextStyle(color: Colors.black, fontSize: 16),
-        titleLarge: TextStyle(color: Colors.black, fontSize: 28, fontWeight: FontWeight.bold),
-        titleMedium: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-        titleSmall: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
+        bodyLarge: TextStyle(color: Colors.blue, fontSize: 18),
+        bodyMedium: TextStyle(color: Colors.blue, fontSize: 16),
+        titleLarge: TextStyle(color: Colors.blue, fontSize: 28, fontWeight: FontWeight.bold),
+        titleMedium: TextStyle(color: Colors.blue, fontSize: 24, fontWeight: FontWeight.bold),
+        titleSmall: TextStyle(color: Colors.blue, fontSize: 20, fontWeight: FontWeight.bold),
       ),
-      cardTheme: CardThemeData(color: Colors.white, elevation: 2, shadowColor: Colors.grey[300]),
+      cardTheme: CardThemeData(color: Colors.white, elevation: 2, shadowColor: Colors.blue[100]),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
         ),
       ),
-      iconTheme: const IconThemeData(color: Colors.black),
-      dividerColor: Colors.grey[300],
+      iconTheme: const IconThemeData(color: Colors.blue),
+      dividerColor: Colors.blue[100],
     );
   }
 

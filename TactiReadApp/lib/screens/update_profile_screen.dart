@@ -176,7 +176,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Form(
             key: _formKey,
             child: ConstrainedBox(
@@ -206,7 +206,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
                     // Form Fields Container
                     Container(
-                      width: 307,
+                      width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(6, 24, 6, 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -444,7 +444,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       ),
                     ),
 
-                    const Spacer(),
+                    const SizedBox(height: 40),
 
                     // Update Button
                     Semantics(
@@ -452,12 +452,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       button: true,
                       onTap: _isLoading ? null : _updateProfile,
                       child: Container(
-                        width: 295,
+                        width: double.infinity,
                         height: 50,
                         child: Material(
-                          color: Theme.of(context).brightness == Brightness.dark 
-                              ? Colors.grey[700] 
-                              : Colors.black,
+                            color: Theme.of(context).colorScheme.primary,
                           borderRadius: BorderRadius.circular(8),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(8),

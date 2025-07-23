@@ -15,8 +15,18 @@ class _HelpScreenState extends State<HelpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final blue = theme.primaryColor;
+    final cardBg = theme.cardTheme.color ?? (isDark ? Colors.blue[900]! : Colors.blue[50]!);
+    final cardText = theme.textTheme.bodyLarge?.color ?? blue;
+    final sectionBtnBg = isDark ? Colors.white : blue;
+    final sectionBtnText = isDark ? Colors.black : Colors.white;
+    final searchBarBg = isDark ? Colors.grey[900]! : Colors.blue[50]!;
+    final searchText = isDark ? Colors.white : Colors.black;
+    final searchIcon = isDark ? Colors.white : blue;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,57 +36,51 @@ class _HelpScreenState extends State<HelpScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 32),
-                    // Help & Support 제목
                     Text(
                       'Help & Support',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 28,
                         fontWeight: FontWeight.w400,
-                        color: Theme.of(context).textTheme.titleLarge?.color,
+                        color: theme.textTheme.titleLarge?.color ?? blue,
                         height: 1.46,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
-                    // 검색바
-                    _buildSearchBar(),
+                    _buildSearchBarCustom(searchBarBg, searchText, searchIcon),
                     const SizedBox(height: 24),
-                    // FAQ 버튼
                     Card(
                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: _buildSectionButton('Expandable FAQ', onTap: () => _navigateToFAQ()),
+                      color: cardBg,
+                      child: _buildSectionButtonCustom('Expandable FAQ', sectionBtnBg, sectionBtnText, onTap: () => _navigateToFAQ()),
                     ),
                     const SizedBox(height: 12),
-                    // Contact Support 섹션
                     Card(
                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      color: cardBg,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: _buildContactSupportSection(),
+                        child: _buildContactSupportSectionCustom(cardText),
                       ),
                     ),
                     const SizedBox(height: 12),
-                    // Community resources 버튼
                     Card(
                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       elevation: 2,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: _buildSectionButton(
-                        'Community resources',
-                        onTap: () => _navigateToCommunity(),
-                      ),
+                      color: cardBg,
+                      child: _buildSectionButtonCustom('Community resources', sectionBtnBg, sectionBtnText, onTap: () => _navigateToCommunity()),
                     ),
                     const SizedBox(height: 22),
                   ],
                 ),
               ),
             ),
-            // Bottom Navigation
             const BottomNavigationComponent(currentRoute: '/help'),
           ],
         ),
@@ -84,24 +88,22 @@ class _HelpScreenState extends State<HelpScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBarCustom(Color bg, Color textColor, Color iconColor) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF),
+        color: bg,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          // 검색 아이콘
-          const Icon(Icons.search, size: 28, color: Color(0x993C3C43)),
-
+          Icon(Icons.search, size: 28, color: iconColor),
           const SizedBox(width: 8),
-
-          // 검색 입력 필드
           Expanded(
             child: TextField(
               controller: _searchController,
@@ -109,17 +111,15 @@ class _HelpScreenState extends State<HelpScreen> {
                 fontFamily: 'SF Pro Text',
                 fontSize: 17,
                 fontWeight: FontWeight.w400,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : Colors.black,
+                color: textColor,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Search',
                 hintStyle: TextStyle(
                   fontFamily: 'SF Pro Text',
                   fontSize: 17,
                   fontWeight: FontWeight.w400,
-                  color: Color(0x993C3C43),
+                  color: iconColor.withOpacity(0.6),
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
@@ -127,20 +127,17 @@ class _HelpScreenState extends State<HelpScreen> {
               onSubmitted: (value) => _performSearch(value),
             ),
           ),
-
           const SizedBox(width: 8),
-
-          // 마이크 아이콘
           GestureDetector(
             onTap: () => _startVoiceSearch(),
             child: Container(
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? Colors.grey[800]! : Colors.white,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(Icons.mic, size: 16, color: Colors.black),
+              child: Icon(Icons.mic, size: 16, color: iconColor),
             ),
           ),
         ],
@@ -148,25 +145,25 @@ class _HelpScreenState extends State<HelpScreen> {
     );
   }
 
-  Widget _buildSectionButton(String title, {required VoidCallback onTap}) {
+  Widget _buildSectionButtonCustom(String title, Color bg, Color textColor, {required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         height: 44,
         decoration: BoxDecoration(
-          color: const Color(0xFF4E4E4E),
+          color: bg,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 23, top: 13),
           child: Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Pretendard Variable',
               fontSize: 18,
               fontWeight: FontWeight.w500,
-              color: Colors.white,
+              color: textColor,
               height: 1.0,
             ),
           ),
@@ -175,32 +172,22 @@ class _HelpScreenState extends State<HelpScreen> {
     );
   }
 
-  Widget _buildContactSupportSection() {
+  Widget _buildContactSupportSectionCustom(Color textColor) {
     return Column(
       children: [
-        // Contact Support 헤더
-        _buildSectionButton('Contact Support', onTap: () {}),
-
+        _buildSectionButtonCustom('Contact Support', Colors.transparent, textColor, onTap: () {}),
         const SizedBox(height: 8),
-
-        // Call 버튼
-        _buildContactButton(
-          icon: Icons.phone_outlined,
-          label: 'Call',
-          onTap: () => _makePhoneCall(),
-        ),
-
+        _buildContactButtonCustom(icon: Icons.phone_outlined, label: 'Call', textColor: textColor, onTap: () => _makePhoneCall()),
         const SizedBox(height: 8),
-
-        // Email 버튼
-        _buildContactButton(icon: Icons.email_outlined, label: 'Email', onTap: () => _sendEmail()),
+        _buildContactButtonCustom(icon: Icons.email_outlined, label: 'Email', textColor: textColor, onTap: () => _sendEmail()),
       ],
     );
   }
 
-  Widget _buildContactButton({
+  Widget _buildContactButtonCustom({
     required IconData icon,
     required String label,
+    required Color textColor,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -209,7 +196,7 @@ class _HelpScreenState extends State<HelpScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           children: [
-            Icon(icon, size: 24, color: Theme.of(context).textTheme.bodyLarge?.color),
+            Icon(icon, size: 24, color: textColor),
             const SizedBox(width: 12),
             Text(
               label,
@@ -217,7 +204,7 @@ class _HelpScreenState extends State<HelpScreen> {
                 fontFamily: 'Pretendard Variable',
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).textTheme.bodyLarge?.color,
+                color: textColor,
               ),
             ),
           ],
@@ -436,12 +423,8 @@ class _FAQScreenState extends State<FAQScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('FAQ'),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.black
-            : Colors.white,
-        foregroundColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white
-            : Colors.black,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
       ),
       body: Column(
         children: [
@@ -451,9 +434,7 @@ class _FAQScreenState extends State<FAQScreen> {
                 // 카테고리 사이드바
                 Container(
                   width: 120,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.grey.shade800
-                      : Colors.grey.shade100,
+                    color: Theme.of(context).colorScheme.background,
                   child: ListView.builder(
                     itemCount: _categories.length,
                     itemBuilder: (context, index) {
@@ -461,10 +442,8 @@ class _FAQScreenState extends State<FAQScreen> {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? (Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black)
+                            color: isSelected
+                              ? Theme.of(context).colorScheme.primary
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -501,9 +480,7 @@ class _FAQScreenState extends State<FAQScreen> {
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade200,
+                        color: Theme.of(context).colorScheme.surface,
                         child: Text(
                           _categories[_selectedCategoryIndex],
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(

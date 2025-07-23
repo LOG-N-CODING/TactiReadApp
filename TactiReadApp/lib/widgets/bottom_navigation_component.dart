@@ -101,7 +101,7 @@ class BottomNavigationComponent extends StatelessWidget {
                 color: isActive
                     ? Theme.of(context).colorScheme.primary
                     : (Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade400
+                          ? Colors.white.withOpacity(0.85)
                           : Colors.grey.shade600),
               ),
               const SizedBox(height: 4),

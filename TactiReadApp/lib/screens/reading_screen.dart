@@ -664,11 +664,32 @@ class _ReadingScreenState extends State<ReadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final blue = theme.primaryColor;
+    final textColor = theme.textTheme.bodyMedium?.color ?? blue;
+    final cardBg = isDark ? Colors.grey[800] : (theme.cardTheme.color ?? Colors.white);
+    final borderColor = isDark ? Colors.grey[600]! : const Color(0xFFB0B0B0);
+    final sliderBg = isDark ? Colors.white.withOpacity(0.4) : blue.withOpacity(0.4);
+    final sliderActive = isDark ? Colors.white : blue;
+    final sliderThumb = isDark ? Colors.white : blue;
+    final toggleActive = isDark ? Colors.white : blue;
+    final toggleInactive = Colors.grey;
+    final toggleThumbActive = isDark ? Colors.black : Colors.white;
+    final toggleThumbInactive = Colors.white;
+    final btnBg = _isReading ? Colors.red : (isDark ? Colors.white : blue);
+    final btnText = _isReading ? Colors.white : (isDark ? Colors.black : Colors.white);
+    final navBtnBg = cardBg;
+    final navBtnBorder = borderColor;
+    final navBtnText = textColor;
+    final sliderLabel = theme.textTheme.bodyLarge?.color ?? blue;
+    final voiceBtnBg = _isListening ? Colors.red : (isDark ? Colors.white : blue);
+    final voiceBtnText = _isListening ? Colors.white : (isDark ? Colors.black : Colors.white);
     return SafeArea(
       child: GestureDetector(
         onDoubleTap: _handleDoubleTap,
         child: Scaffold(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          backgroundColor: theme.scaffoldBackgroundColor,
           bottomNavigationBar: const BottomNavigationComponent(currentRoute: '/reading'),
           body: SafeArea(
             child: Column(
@@ -685,7 +706,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
                           children: [
                             Column(
                               children: [
-                                // File title
                                 SizedBox(
                                   width: MediaQuery.of(context).size.width * 0.25,
                                   child: Text(
@@ -694,30 +714,26 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       fontFamily: 'Pretendard Variable',
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
-                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      color: textColor,
                                       height: 1.0,
                                     ),
-                                    overflow: TextOverflow.ellipsis, // 넘치면 ... 표시
-                                    maxLines: 1, // 한 줄로 제한
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
                                 ),
-
                                 const SizedBox(height: 26),
-
-                                // Device status
                                 Text(
                                   'Device status',
                                   style: TextStyle(
                                     fontFamily: 'Pretendard Variable',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Theme.of(context).textTheme.bodyMedium?.color,
+                                    color: textColor,
                                     height: 1.0,
                                   ),
                                 ),
                               ],
                             ),
-                            // Start Reading button (centered)
                             Center(
                               child: GestureDetector(
                                 onTap: _startReading,
@@ -725,11 +741,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   width: MediaQuery.of(context).size.width * 0.35,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: _isReading
-                                        ? Colors.red
-                                        : (Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black),
+                                    color: btnBg,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Center(
@@ -739,11 +751,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                         fontFamily: 'Pretendard Variable',
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500,
-                                        color: _isReading
-                                            ? Colors.white
-                                            : (Theme.of(context).brightness == Brightness.dark
-                                                  ? Colors.black
-                                                  : Colors.white),
+                                        color: btnText,
                                         height: 1.0,
                                       ),
                                     ),
@@ -753,28 +761,18 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 50),
-
-                        // Start Reading button and navigation buttons
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Previous page button
                             GestureDetector(
                               onTap: _previousPage,
                               child: Container(
                                 width: 142,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.grey.shade800
-                                      : Colors.white,
-                                  border: Border.all(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.grey.shade600
-                                        : const Color(0xFFB0B0B0),
-                                  ),
+                                  color: navBtnBg,
+                                  border: Border.all(color: navBtnBorder),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Center(
@@ -784,7 +782,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       fontFamily: 'Inter',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      color: navBtnText,
                                       height: 1.21,
                                     ),
                                     textAlign: TextAlign.center,
@@ -792,24 +790,15 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 ),
                               ),
                             ),
-
                             const SizedBox(width: 12),
-
-                            // Next page button
                             GestureDetector(
                               onTap: _nextPage,
                               child: Container(
                                 width: 142,
                                 height: 44,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).brightness == Brightness.dark
-                                      ? Colors.grey.shade800
-                                      : Colors.white,
-                                  border: Border.all(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.grey.shade600
-                                        : const Color(0xFFB0B0B0),
-                                  ),
+                                  color: navBtnBg,
+                                  border: Border.all(color: navBtnBorder),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Center(
@@ -819,7 +808,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       fontFamily: 'Inter',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                                      color: navBtnText,
                                       height: 1.21,
                                     ),
                                     textAlign: TextAlign.center,
@@ -829,10 +818,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 80),
-
-                        // Reading speed slider
                         Center(
                           child: Column(
                             children: [
@@ -845,7 +831,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                       fontFamily: 'Inter',
                                       fontSize: 18,
                                       fontWeight: FontWeight.w400,
-                                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                                      color: sliderLabel,
                                       height: 1.46,
                                     ),
                                     textAlign: TextAlign.center,
@@ -858,15 +844,13 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                     child: Container(
                                       padding: const EdgeInsets.all(6),
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).brightness == Brightness.dark
-                                            ? Colors.grey[800]
-                                            : Colors.grey[100],
+                                        color: cardBg,
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Icon(
                                         Icons.settings,
                                         size: 20,
-                                        color: Theme.of(context).iconTheme.color,
+                                        color: theme.iconTheme.color,
                                       ),
                                     ),
                                   ),
@@ -878,7 +862,6 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 height: 44,
                                 child: Stack(
                                   children: [
-                                    // Background track
                                     Positioned(
                                       left: 0,
                                       top: 16,
@@ -886,14 +869,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                         width: 256,
                                         height: 12,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white.withOpacity(0.4)
-                                              : Colors.black.withOpacity(0.4),
+                                          color: sliderBg,
                                           borderRadius: BorderRadius.circular(80),
                                         ),
                                       ),
                                     ),
-                                    // Active track
                                     Positioned(
                                       left: 0,
                                       top: 16,
@@ -901,14 +881,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                         width: 256 * ((_readingSpeed - 0.1) / 0.4),
                                         height: 12,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black,
+                                          color: sliderActive,
                                           borderRadius: BorderRadius.circular(80),
                                         ),
                                       ),
                                     ),
-                                    // Thumb
                                     Positioned(
                                       left: (256 - 44) * ((_readingSpeed - 0.1) / 0.4),
                                       top: 0,
@@ -916,14 +893,11 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                         width: 44,
                                         height: 44,
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black,
+                                          color: sliderThumb,
                                           shape: BoxShape.circle,
                                         ),
                                       ),
                                     ),
-                                    // Invisible slider for interaction
                                     SliderTheme(
                                       data: SliderTheme.of(context).copyWith(
                                         trackHeight: 44,
@@ -948,10 +922,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 40),
-
-                        // Voice guidance toggle
                         Center(
                           child: Column(
                             children: [
@@ -961,7 +932,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   fontFamily: 'Inter',
                                   fontSize: 18,
                                   fontWeight: FontWeight.w400,
-                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                  color: sliderLabel,
                                   height: 1.46,
                                 ),
                                 textAlign: TextAlign.center,
@@ -977,11 +948,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                   width: 120,
                                   height: 60,
                                   decoration: BoxDecoration(
-                                    color: _toPixel
-                                        ? (Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black)
-                                        : Colors.grey,
+                                    color: _toPixel ? toggleActive : toggleInactive,
                                     borderRadius: BorderRadius.circular(80),
                                   ),
                                   child: Stack(
@@ -994,11 +961,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                           width: 44,
                                           height: 44,
                                           decoration: BoxDecoration(
-                                            color: _toPixel
-                                                ? (Theme.of(context).brightness == Brightness.dark
-                                                      ? Colors.black
-                                                      : Colors.white)
-                                                : Colors.white,
+                                            color: _toPixel ? toggleThumbActive : toggleThumbInactive,
                                             shape: BoxShape.circle,
                                           ),
                                         ),
@@ -1013,50 +976,32 @@ class _ReadingScreenState extends State<ReadingScreen> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
-                                  color: _toPixel ? Colors.blue : Colors.green,
+                                  color: _toPixel ? blue : Colors.green,
                                 ),
                               ),
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 40),
-
-                        // Voice Control Button
                         Center(
                           child: ElevatedButton.icon(
                             onPressed: _startVoiceInstructions,
                             icon: Icon(
                               _isListening ? Icons.mic : Icons.mic_none,
-                              color: _isListening
-                                  ? Colors.white
-                                  : (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white),
+                              color: voiceBtnText,
                             ),
                             label: Text(
                               _isListening ? 'Listening...' : 'Voice Command',
-                              style: TextStyle(
-                                color: _isListening
-                                    ? Colors.white
-                                    : (Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.black
-                                          : Colors.white),
-                              ),
+                              style: TextStyle(color: voiceBtnText),
                             ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _isListening
-                                  ? Colors.red
-                                  : (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black),
+                              backgroundColor: voiceBtnBg,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 40),
                       ],
                     ),
@@ -1066,7 +1011,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
             ),
           ),
         ),
-      ), // GestureDetector의 닫는 괄호
+      ),
     );
   }
 

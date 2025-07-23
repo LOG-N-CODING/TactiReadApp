@@ -159,7 +159,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -182,7 +182,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               button: true,
               onTap: _updateProfile,
               child: Container(
-                width: 295,
+                width: double.infinity,
                 height: 50,
                 child: Material(
                   color: Theme.of(context).brightness == Brightness.dark 
@@ -220,7 +220,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               button: true,
               onTap: _deleteAccount,
               child: Container(
-                width: 295,
+                width: double.infinity,
                 height: 50,
                 child: Material(
                   color: Theme.of(context).brightness == Brightness.dark 
@@ -260,12 +260,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               button: true,
               onTap: _logout,
               child: Container(
-                width: 295,
+                width: double.infinity,
                 height: 50,
                 child: Material(
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.grey[700]
-                      : const Color(0xFF4D4D4D),
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8),

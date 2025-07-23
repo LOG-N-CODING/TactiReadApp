@@ -386,7 +386,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Greeting Message
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 41),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Text(
                 'Greeting message',
                 style: TextStyle(
@@ -403,7 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 38),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Container(
                 height: 44,
                 decoration: BoxDecoration(
@@ -462,7 +462,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Document List Section
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 41),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   children: [
                     Text(
@@ -483,8 +483,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF2C2C2E)
-                              : Colors.black,
+                            ? Theme.of(context).cardTheme.color ?? const Color(0xFF2C2C2E)
+                            : Theme.of(context).cardTheme.color ?? Colors.white,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
@@ -547,11 +547,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         child: Text(
                                           'No documents found.\nPlease tap the Upload button above to upload a file.',
                                           style: TextStyle(
-                                            fontSize: 16,
-                                            color: Theme.of(context).brightness == Brightness.dark
-                                                ? Colors.white
-                                                : Colors.black,
-                                            height: 1.5,
+                                          fontSize: 16,
+                                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                                          height: 1.5,
                                           ),
                                           textAlign: TextAlign.center,
                                         ),
@@ -570,7 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
-                    SizedBox(height: 40),
+                    SizedBox(height: 20),
 
                     // Upload Button
                     GestureDetector(
@@ -580,17 +578,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 60,
                         decoration: BoxDecoration(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF1E1E1E)
-                              : Colors.black,
+                            ? const Color(0xFF1E1E1E)
+                            : const Color(0xFF1976D2), // 라이트 모드에서 파란색 계열
                           borderRadius: BorderRadius.circular(5),
                           boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white.withOpacity(0.1)
-                                  : Colors.black.withOpacity(0.1),
-                              blurRadius: 20,
-                              offset: const Offset(0, 0),
-                            ),
+                          BoxShadow(
+                            color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white.withOpacity(0.1)
+                              : const Color(0xFF1976D2).withOpacity(0.2), // 라이트 모드에서 파란색 그림자
+                            blurRadius: 20,
+                            offset: const Offset(0, 0),
+                          ),
                           ],
                         ),
                         child: Row(
@@ -645,19 +643,38 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Row(
           children: [
+            // 파일 아이콘
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+              color: Theme.of(context).cardTheme.color ?? Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              ),
+              child: Icon(
+              document.fileType.toLowerCase() == 'pdf'
+                ? Icons.picture_as_pdf
+                : (['png', 'jpg', 'jpeg'].contains(document.fileType.toLowerCase())
+                  ? Icons.image
+                  : Icons.insert_drive_file),
+              color: Theme.of(context).iconTheme.color,
+              size: 20,
+              ),
+            ),
+            const SizedBox(width: 8),
             // 파일명 (확장된 영역)
             Expanded(
               flex: 3,
               child: Text(
-                document.fileName,
-                style: const TextStyle(
-                  fontSize: 14, // 텍스트 크기 줄임
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                  height: 1.21,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+              document.fileName,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                height: 1.21,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               ),
             ),
             const SizedBox(width: 8),
@@ -665,14 +682,14 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               flex: 1,
               child: Text(
-                '${(document.fileSize / 1024).toStringAsFixed(1)} KB',
-                style: const TextStyle(
-                  fontSize: 12, // 텍스트 크기 줄임
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xFFCBCBCB),
-                  height: 1.21,
-                ),
-                textAlign: TextAlign.center,
+              '${(document.fileSize / 1024).toStringAsFixed(1)} KB',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                height: 1.21,
+              ),
+              textAlign: TextAlign.center,
               ),
             ),
             const SizedBox(width: 8),

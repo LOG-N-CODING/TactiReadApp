@@ -220,12 +220,10 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _signIn,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                          foregroundColor: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.black
-                              : Colors.white,
+                            backgroundColor: Theme.of(context).elevatedButtonTheme.style?.backgroundColor?.resolve({}) ??
+                              (Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.blue),
+                            foregroundColor: Theme.of(context).elevatedButtonTheme.style?.foregroundColor?.resolve({}) ??
+                              (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white),
                           elevation: 0,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -236,9 +234,10 @@ class _SignInScreenState extends State<SignInScreen> {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).brightness == Brightness.dark
+                                    Theme.of(context).elevatedButtonTheme.style?.foregroundColor?.resolve({}) ??
+                                      (Theme.of(context).brightness == Brightness.dark
                                         ? Colors.black
-                                        : Colors.white,
+                                        : Colors.white),
                                   ),
                                 ),
                               )

@@ -105,235 +105,213 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final blue = theme.primaryColor;
+    final cardBg = isDark ? Colors.grey[800]! : (theme.cardTheme.color ?? Colors.white);
+    final cardText = theme.textTheme.bodyLarge?.color ?? blue;
+    final sliderActive = isDark ? Colors.white : blue;
+    final sliderInactive = isDark ? Colors.grey[700]! : Colors.blue[100]!;
+    final thumbColor = isDark ? Colors.white : blue;
+    final overlayColor = isDark ? Colors.white.withOpacity(0.1) : blue.withOpacity(0.1);
+    final labelText = theme.textTheme.bodyLarge?.color ?? blue;
+    final presetSelectedBg = isDark ? Colors.white : blue;
+    final presetSelectedText = isDark ? Colors.black : Colors.white;
+    final presetUnselectedBg = isDark ? Colors.grey[700]! : Colors.blue[50]!;
+    final presetUnselectedText = cardText;
+    final presetSelectedBorder = isDark ? Colors.white : blue;
+    final presetUnselectedBorder = isDark ? Colors.grey[600]! : Colors.blue[200]!;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            // Reading Speed Title
-            Text(
-              'Reading Speed',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 28,
-                fontWeight: FontWeight.w400,
-                color: Theme.of(context).textTheme.titleLarge?.color,
-                height: 1.21,
-              ),
-            ),
-            const SizedBox(height: 98), // 197 - 65 - 34 = 98
-            // Custom Slider
-            SizedBox(
-              width: double.infinity,
-              child: Column(
-                children: [
-                  // Slider with custom styling
-                  SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : const Color(0xFF4D4D4D),
-                      inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade700
-                          : const Color(0xFFE6E6E6),
-                      trackHeight: 6,
-                      thumbColor: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : const Color(0xFF4D4D4D),
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-                      overlayColor:
-                          (Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : const Color(0xFF4D4D4D))
-                              .withOpacity(0.1),
-                      trackShape: const RoundedRectSliderTrackShape(),
-                    ),
-                    child: Semantics(
-                      label: 'Reading speed control',
-                      value: '${(_currentSpeed * 100).round()} percent, ${_getSpeedDescription()}',
-                      child: Slider(
-                        value: _currentSpeed,
-                        onChanged: _onSpeedChanged,
-                        min: 0.1,
-                        max: 0.5,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 16), // Adjust spacing for better alignment
-                  // Slow and Fast Labels
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Slow',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                          height: 1.21,
-                        ),
-                      ),
-                      Text(
-                        'Fast',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                          height: 1.21,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // Current Speed Display
-            Center(
-              child: Column(
-                children: [
-                  Text(
-                    'Current Speed',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      height: 1.21,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _getSpeedDescription(),
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).textTheme.titleLarge?.color,
-                      height: 1.21,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${_getWordsPerMinute()} words per minute',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: Theme.of(context).textTheme.bodySmall?.color,
-                      height: 1.21,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 40),
-
-            // Speed Presets
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Quick Presets',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).textTheme.titleMedium?.color,
-                    height: 1.21,
-                  ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 24),
+              Text(
+                'Reading Speed',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w400,
+                  color: theme.textTheme.titleLarge?.color ?? blue,
+                  height: 1.21,
                 ),
-                const SizedBox(height: 16),
-                Column(
-                  children: _speedPresets.entries.map((entry) {
-                    // 범위 기반으로 선택 상태 결정
-                    bool isSelected = _isInPresetRange(entry.key);
-                    return Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 8),
+              ),
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: sliderActive,
+                        inactiveTrackColor: sliderInactive,
+                        trackHeight: 6,
+                        thumbColor: thumbColor,
+                        thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+                        overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
+                        overlayColor: overlayColor,
+                        trackShape: const RoundedRectSliderTrackShape(),
+                      ),
                       child: Semantics(
-                        label: '${entry.key} reading speed preset',
-                        value: isSelected ? 'Selected' : 'Not selected',
-                        button: true,
-                        onTap: () => _setPresetSpeed(entry.value),
-                        child: GestureDetector(
+                        label: 'Reading speed control',
+                        value: '${(_currentSpeed * 100).round()} percent, ${_getSpeedDescription()}',
+                        child: Slider(
+                          value: _currentSpeed,
+                          onChanged: _onSpeedChanged,
+                          min: 0.1,
+                          max: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Slow',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: labelText,
+                            height: 1.21,
+                          ),
+                        ),
+                        Text(
+                          'Fast',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: labelText,
+                            height: 1.21,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              Center(
+                child: Column(
+                  children: [
+                    Text(
+                      'Current Speed',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodyMedium?.color ?? blue,
+                        height: 1.21,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _getSpeedDescription(),
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: theme.textTheme.titleLarge?.color ?? blue,
+                        height: 1.21,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_getWordsPerMinute()} words per minute',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: theme.textTheme.bodySmall?.color ?? blue,
+                        height: 1.21,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Quick Presets',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: theme.textTheme.titleMedium?.color ?? blue,
+                      height: 1.21,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: _speedPresets.entries.map((entry) {
+                      bool isSelected = _isInPresetRange(entry.key);
+                      return Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: Semantics(
+                          label: '${entry.key} reading speed preset',
+                          value: isSelected ? 'Selected' : 'Not selected',
+                          button: true,
                           onTap: () => _setPresetSpeed(entry.value),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.white
-                                        : Colors.black)
-                                  : (Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.grey[700]
-                                        : Colors.grey[200]),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isSelected
-                                    ? (Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.white
-                                          : Colors.black)
-                                    : (Theme.of(context).brightness == Brightness.dark
-                                          ? Colors.grey[600]!
-                                          : Colors.grey[400]!),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  entry.key,
-                                  style: TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: isSelected
-                                        ? (Theme.of(context).brightness == Brightness.dark
-                                              ? Colors.black
-                                              : Colors.white)
-                                        : Theme.of(context).textTheme.bodyMedium?.color,
-                                    height: 1.21,
-                                  ),
+                          child: GestureDetector(
+                            onTap: () => _setPresetSpeed(entry.value),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: isSelected ? presetSelectedBg : presetUnselectedBg,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? presetSelectedBorder : presetUnselectedBorder,
+                                  width: 1,
                                 ),
-                                if (isSelected)
-                                  Icon(
-                                    Icons.check,
-                                    size: 20,
-                                    color: Theme.of(context).brightness == Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    entry.key,
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: isSelected ? presetSelectedText : presetUnselectedText,
+                                      height: 1.21,
+                                    ),
                                   ),
-                              ],
+                                  if (isSelected)
+                                    Icon(
+                                      Icons.check,
+                                      size: 20,
+                                      color: presetSelectedText,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ],
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
