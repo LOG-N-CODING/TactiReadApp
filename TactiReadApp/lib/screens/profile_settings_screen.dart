@@ -77,7 +77,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     Navigator.of(context).pop(); // 로딩 다이얼로그 닫기
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('계정 삭제 중 오류가 발생했습니다.'),
+                        content: Text('An error occurred while deleting the account.'),
                         backgroundColor: Colors.red,
                         duration: Duration(seconds: 3),
                       ),
@@ -115,7 +115,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('로그아웃되었습니다.'),
+                        content: Text('You have been logged out.'),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 1),
                       ),
@@ -130,7 +130,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('로그아웃 중 오류가 발생했습니다.'),
+                        content: Text('An error occurred during logout.'),
                         backgroundColor: Colors.red,
                         duration: Duration(seconds: 2),
                       ),

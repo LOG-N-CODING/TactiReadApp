@@ -22,11 +22,10 @@ class _HelpScreenState extends State<HelpScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 39),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: Column(
                   children: [
-                    const SizedBox(height: 65),
-
+                    const SizedBox(height: 32),
                     // Help & Support 제목
                     Text(
                       'Help & Support',
@@ -39,33 +38,44 @@ class _HelpScreenState extends State<HelpScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-
-                    const SizedBox(height: 98),
-
+                    const SizedBox(height: 24),
                     // 검색바
                     _buildSearchBar(),
-
-                    const SizedBox(height: 100),
-
-                    // Expandable FAQ 버튼
-                    _buildSectionButton('Expandable FAQ', onTap: () => _navigateToFAQ()),
-
-                    const SizedBox(height: 22),
-
+                    const SizedBox(height: 24),
+                    // FAQ 버튼
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: _buildSectionButton('Expandable FAQ', onTap: () => _navigateToFAQ()),
+                    ),
+                    const SizedBox(height: 12),
                     // Contact Support 섹션
-                    _buildContactSupportSection(),
-
-                    const SizedBox(height: 152),
-
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: _buildContactSupportSection(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     // Community resources 버튼
-                    _buildSectionButton('Community resources', onTap: () => _navigateToCommunity()),
-
-                    const SizedBox(height: 30),
+                    Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: _buildSectionButton(
+                        'Community resources',
+                        onTap: () => _navigateToCommunity(),
+                      ),
+                    ),
+                    const SizedBox(height: 22),
                   ],
                 ),
               ),
             ),
-
             // Bottom Navigation
             const BottomNavigationComponent(currentRoute: '/help'),
           ],
@@ -76,6 +86,7 @@ class _HelpScreenState extends State<HelpScreen> {
 
   Widget _buildSearchBar() {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       width: double.infinity,
       height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -98,7 +109,9 @@ class _HelpScreenState extends State<HelpScreen> {
                 fontFamily: 'SF Pro Text',
                 fontSize: 17,
                 fontWeight: FontWeight.w400,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
               ),
               decoration: const InputDecoration(
                 hintText: 'Search',
@@ -218,7 +231,7 @@ class _HelpScreenState extends State<HelpScreen> {
     if (query.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('검색: $query'),
+          content: Text('Search: $query'),
           backgroundColor: Colors.blue,
           duration: const Duration(seconds: 2),
         ),
@@ -230,7 +243,7 @@ class _HelpScreenState extends State<HelpScreen> {
   void _startVoiceSearch() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('음성 검색을 시작합니다...'),
+        content: Text('Starting voice search...'),
         backgroundColor: Colors.green,
         duration: Duration(seconds: 2),
       ),
@@ -246,7 +259,7 @@ class _HelpScreenState extends State<HelpScreen> {
   void _navigateToCommunity() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('커뮤니티 리소스 페이지로 이동합니다.'),
+        content: Text('Navigating to community resources page.'),
         backgroundColor: Colors.blue,
         duration: Duration(seconds: 2),
       ),
@@ -260,9 +273,9 @@ class _HelpScreenState extends State<HelpScreen> {
       await launchUrl(phoneUri);
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('전화를 걸 수 없습니다.'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cannot make a phone call'), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -272,14 +285,14 @@ class _HelpScreenState extends State<HelpScreen> {
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'support@tactiread.com',
-      query: 'subject=TactiRead 지원 요청&body=안녕하세요,%0A%0A문의 내용을 입력해 주세요.',
+      query: 'subject=TactiRead Support Request&body=Hello,%0A%0APlease enter your inquiry.',
     );
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('이메일 앱을 열 수 없습니다.'), backgroundColor: Colors.red),
+          const SnackBar(content: Text('Cannot open email app'), backgroundColor: Colors.red),
         );
       }
     }
@@ -303,95 +316,116 @@ class FAQScreen extends StatefulWidget {
 class _FAQScreenState extends State<FAQScreen> {
   int _selectedCategoryIndex = 0;
 
-  final List<String> _categories = ['시작하기', '문서 업로드', '점자 읽기', '디바이스 연결', '설정', '문제 해결'];
+  final List<String> _categories = [
+    'Start',
+    'Document Upload',
+    'Braille Reading',
+    'Device Connection',
+    'Settings',
+    'Troubleshooting',
+  ];
 
   final Map<String, List<Map<String, String>>> _helpContent = {
-    '시작하기': [
+    'Start': [
       {
-        'question': 'TactiRead는 무엇인가요?',
-        'answer': 'TactiRead는 시각장애인을 위한 점자 독서 솔루션입니다. 일반 텍스트 문서를 점자로 변환하여 점자 디스플레이로 읽을 수 있게 해줍니다.',
-      },
-      {
-        'question': '처음 사용할 때 무엇을 해야 하나요?',
+        'question': 'What is TactiRead?',
         'answer':
-            '1. 접근성 설정을 확인하세요\n2. 점자 디스플레이를 연결하세요\n3. 첫 번째 문서를 업로드해보세요\n4. 튜토리얼을 통해 기능을 익혀보세요',
+            'TactiRead is a braille reading solution for the visually impaired. It converts regular text documents into braille for reading on a braille display.',
       },
       {
-        'question': '어떤 파일 형식을 지원하나요?',
-        'answer': 'PDF, Microsoft Word(.docx), 텍스트 파일(.txt), 그리고 이미지에서 텍스트 추출을 지원합니다.',
-      },
-    ],
-    '문서 업로드': [
-      {
-        'question': '문서를 어떻게 업로드하나요?',
+        'question': 'What should I do when I first use it?',
         'answer':
-            '1. 홈 화면의 "문서 추가" 버튼을 누르세요\n2. "파일에서 선택", "카메라로 촬영", "웹에서 가져오기" 중 선택하세요\n3. 파일을 선택하면 자동으로 점자로 변환됩니다',
+            '1. Check accessibility settings\n2. Connect the braille display\n3. Try uploading your first document\n4. Learn about features through the tutorial',
       },
       {
-        'question': '카메라로 문서를 촬영할 수 있나요?',
-        'answer': '네, 카메라를 사용해 인쇄된 문서를 촬영하면 OCR 기술을 통해 텍스트를 추출하고 점자로 변환합니다.',
-      },
-      {
-        'question': '업로드한 파일은 어디에 저장되나요?',
-        'answer': '업로드한 파일은 앱 내부 저장소에 안전하게 보관되며, 내 서재에서 언제든지 접근할 수 있습니다.',
-      },
-    ],
-    '점자 읽기': [
-      {
-        'question': '점자 읽기 속도를 조절할 수 있나요?',
-        'answer': '네, 읽기 화면에서 속도 슬라이더를 사용하여 10%부터 100%까지 조절할 수 있습니다.',
-      },
-      {
-        'question': '북마크는 어떻게 추가하나요?',
-        'answer': '읽기 중에 상단의 북마크 아이콘을 누르거나, 하단의 북마크 버튼을 사용하여 현재 위치에 북마크를 추가할 수 있습니다.',
-      },
-      {
-        'question': '특정 페이지로 이동하려면?',
-        'answer': '목차 버튼을 눌러 챕터별로 이동하거나, 검색 기능을 사용하여 특정 텍스트를 찾아 이동할 수 있습니다.',
-      },
-    ],
-    '디바이스 연결': [
-      {
-        'question': '지원하는 점자 디스플레이는?',
-        'answer': 'Braille Sense, Focus Blue, BrailleNote Touch 등 대부분의 블루투스 점자 디스플레이를 지원합니다.',
-      },
-      {
-        'question': '디바이스 연결이 안 될 때는?',
+        'question': 'What file formats are supported?',
         'answer':
-            '1. 점자 디스플레이가 페어링 모드인지 확인하세요\n2. 블루투스를 껐다가 다시 켜보세요\n3. 앱에서 새로고침을 눌러보세요\n4. 디바이스를 재시작해보세요',
-      },
-      {
-        'question': '배터리 상태를 확인할 수 있나요?',
-        'answer': '네, 연결된 점자 디스플레이의 배터리 상태를 디바이스 연결 화면에서 확인할 수 있습니다.',
+            'PDF, Microsoft Word(.docx), Text files(.txt), and image-to-text extraction are supported.',
       },
     ],
-    '설정': [
+    'Document Upload': [
       {
-        'question': '접근성 설정은 어떻게 변경하나요?',
-        'answer': '설정 > 접근성에서 음성 안내, 큰 텍스트, 고대비 모드 등을 조절할 수 있습니다.',
-      },
-      {
-        'question': '점자 등급이란 무엇인가요?',
-        'answer': 'Grade 1은 전체 철자법으로 모든 글자를 표기하고, Grade 2는 단축 표기법으로 더 효율적인 읽기가 가능합니다.',
-      },
-      {
-        'question': '데이터를 백업할 수 있나요?',
-        'answer': '네, 설정 > 계정에서 설정, 북마크, 읽기 진행률을 클라우드에 백업하고 복원할 수 있습니다.',
-      },
-    ],
-    '문제 해결': [
-      {
-        'question': '앱이 느리게 동작해요',
-        'answer': '1. 다른 앱들을 종료해보세요\n2. 기기를 재시작해보세요\n3. 앱을 최신 버전으로 업데이트하세요\n4. 저장 공간을 확인해보세요',
-      },
-      {
-        'question': '음성 안내가 작동하지 않아요',
-        'answer': '설정 > 접근성에서 음성 안내가 켜져 있는지 확인하고, 기기의 접근성 설정도 확인해보세요.',
-      },
-      {
-        'question': '문서 변환이 실패해요',
+        'question': 'How do I upload a document?',
         'answer':
-            '1. 파일 형식이 지원되는지 확인하세요\n2. 파일 크기가 너무 크지 않은지 확인하세요\n3. 인터넷 연결을 확인하세요\n4. 잠시 후 다시 시도해보세요',
+            '1. Tap the "Add Document" button on the home screen\n2. Choose from "Select from Files", "Capture with Camera", or "Import from Web"\n3. Once you select a file, it will be automatically converted to braille',
+      },
+      {
+        'question': 'Can I take a picture of a document with the camera?',
+        'answer':
+            'Yes, you can use the camera to take a picture of a printed document, and it will extract the text using OCR technology and convert it to braille.',
+      },
+      {
+        'question': 'Where are uploaded files stored?',
+        'answer':
+            'Uploaded files are securely stored in the app\'s internal storage and can be accessed anytime from My Library.',
+      },
+    ],
+    'Braille Reading': [
+      {
+        'question': 'Can I adjust the reading speed?',
+        'answer':
+            'Yes, you can adjust the reading speed using the speed slider on the reading screen, from 10% to 100%.',
+      },
+      {
+        'question': 'How do I add a bookmark?',
+        'answer':
+            'You can add a bookmark by tapping the bookmark icon at the top while reading, or by using the bookmark button at the bottom to add a bookmark at the current position.',
+      },
+      {
+        'question': 'How do I navigate to a specific page?',
+        'answer':
+            'You can use the table of contents button to navigate by chapter, or use the search function to find specific text and jump to it.',
+      },
+    ],
+    'Device Connection': [
+      {
+        'question': 'What braille displays are supported?',
+        'answer':
+            'Braille Sense, Focus Blue, BrailleNote Touch and most Bluetooth braille displays are supported.',
+      },
+      {
+        'question': 'What should I do if the device connection fails?',
+        'answer':
+            '1. Check if the braille display is in pairing mode\n2. Turn Bluetooth off and on again\n3. Try refreshing the app\n4. Restart the device',
+      },
+      {
+        'question': 'Can I check the battery status?',
+        'answer':
+            'Yes, you can check the battery status of the connected braille display on the device connection screen.',
+      },
+    ],
+    'Settings': [
+      {
+        'question': 'How do I change accessibility settings?',
+        'answer':
+            'You can adjust voice guidance, large text, high contrast mode, and more in Settings > Accessibility.',
+      },
+      {
+        'question': 'What is braille grade?',
+        'answer':
+            'Grade 1 represents all letters in full spelling, while Grade 2 uses contractions for more efficient reading.',
+      },
+      {
+        'question': 'Can I back up my data?',
+        'answer':
+            'Yes, you can back up and restore settings, bookmarks, and reading progress to the cloud in Settings > Account.',
+      },
+    ],
+    'Troubleshooting': [
+      {
+        'question': 'The app is running slowly',
+        'answer':
+            '1. Try closing other apps\n2. Restart the device\n3. Update the app to the latest version\n4. Check storage space',
+      },
+      {
+        'question': 'Voice guidance is not working',
+        'answer':
+            'Check if voice guidance is enabled in Settings > Accessibility, and also check the device\'s accessibility settings.',
+      },
+      {
+        'question': 'Document conversion failed',
+        'answer':
+            '1. Check if the file format is supported\n2. Check if the file size is not too large\n3. Check your internet connection\n4. Try again later',
       },
     ],
   };
@@ -402,11 +436,11 @@ class _FAQScreenState extends State<FAQScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('FAQ'),
-        backgroundColor: Theme.of(context).brightness == Brightness.dark 
-            ? Colors.black 
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
             : Colors.white,
-        foregroundColor: Theme.of(context).brightness == Brightness.dark 
-            ? Colors.white 
+        foregroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
             : Colors.black,
       ),
       body: Column(
@@ -417,8 +451,8 @@ class _FAQScreenState extends State<FAQScreen> {
                 // 카테고리 사이드바
                 Container(
                   width: 120,
-                  color: Theme.of(context).brightness == Brightness.dark 
-                      ? Colors.grey.shade800 
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey.shade800
                       : Colors.grey.shade100,
                   child: ListView.builder(
                     itemCount: _categories.length,
@@ -427,10 +461,10 @@ class _FAQScreenState extends State<FAQScreen> {
                       return Container(
                         margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
                         decoration: BoxDecoration(
-                          color: isSelected 
-                              ? (Theme.of(context).brightness == Brightness.dark 
-                                  ? Colors.white 
-                                  : Colors.black)
+                          color: isSelected
+                              ? (Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -440,10 +474,10 @@ class _FAQScreenState extends State<FAQScreen> {
                             _categories[index],
                             style: TextStyle(
                               fontSize: 12,
-                              color: isSelected 
-                                  ? (Theme.of(context).brightness == Brightness.dark 
-                                      ? Colors.black 
-                                      : Colors.white)
+                              color: isSelected
+                                  ? (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white)
                                   : Theme.of(context).textTheme.bodyMedium?.color,
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                             ),
@@ -510,9 +544,9 @@ class _FAQScreenState extends State<FAQScreen> {
       color: Theme.of(context).cardColor,
       child: ExpansionTile(
         title: Text(
-          question, 
+          question,
           style: TextStyle(
-            fontWeight: FontWeight.w500, 
+            fontWeight: FontWeight.w500,
             fontSize: 16,
             color: Theme.of(context).textTheme.titleMedium?.color,
           ),
@@ -525,11 +559,8 @@ class _FAQScreenState extends State<FAQScreen> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                answer, 
-                style: TextStyle(
-                  color: Theme.of(context).textTheme.bodyMedium?.color, 
-                  height: 1.5,
-                ),
+                answer,
+                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, height: 1.5),
               ),
             ),
           ),

@@ -10,15 +10,15 @@ class ReadingSpeedControlScreen extends StatefulWidget {
 }
 
 class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
-  double _currentSpeed = 0.5; // Default to middle position (50%)
+  double _currentSpeed = 0.3; // Default to 0.3 (60% of 0.1-0.5 range)
 
-  // Predefined speed presets
+  // Predefined speed presets (adjusted to 0.1-0.5 range)
   final Map<String, double> _speedPresets = {
+    'Very Fast': 0.5,
+    'Fast': 0.4,
+    'Normal': 0.3,
+    'Slow': 0.2,
     'Very Slow': 0.1,
-    'Slow': 0.3,
-    'Normal': 0.5,
-    'Fast': 0.7,
-    'Very Fast': 0.9,
   };
 
   @override
@@ -31,7 +31,14 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
   Future<void> _loadReadingSpeed() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _currentSpeed = prefs.getDouble('reading_speed') ?? 0.5;
+      double savedSpeed = prefs.getDouble('reading_speed') ?? 0.3;
+      // 새로운 범위(0.1-0.5)에 맞게 값 제한
+      _currentSpeed = savedSpeed.clamp(0.1, 0.5);
+
+      // 만약 저장된 값이 범위를 벗어났다면 새로운 값으로 저장
+      if (savedSpeed != _currentSpeed) {
+        _saveReadingSpeed(_currentSpeed);
+      }
     });
   }
 
@@ -66,16 +73,34 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
   }
 
   String _getSpeedDescription() {
-    if (_currentSpeed <= 0.2) return 'Very Slow';
-    if (_currentSpeed <= 0.4) return 'Slow';
-    if (_currentSpeed <= 0.6) return 'Normal';
-    if (_currentSpeed <= 0.8) return 'Fast';
+    if (_currentSpeed <= 0.15) return 'Very Slow';
+    if (_currentSpeed <= 0.25) return 'Slow';
+    if (_currentSpeed <= 0.35) return 'Normal';
+    if (_currentSpeed <= 0.45) return 'Fast';
     return 'Very Fast';
   }
 
   int _getWordsPerMinute() {
-    // Convert slider value (0-1) to words per minute (50-250 WPM)
-    return (50 + (_currentSpeed * 200)).round();
+    // Convert slider value (0.1-0.5) to words per minute (50-150 WPM)
+    return (50 + ((_currentSpeed - 0.1) / 0.4 * 100)).round();
+  }
+
+  // 현재 속도가 어떤 preset 범위에 속하는지 확인
+  bool _isInPresetRange(String presetName) {
+    switch (presetName) {
+      case 'Very Slow':
+        return _currentSpeed <= 0.15;
+      case 'Slow':
+        return _currentSpeed > 0.15 && _currentSpeed <= 0.25;
+      case 'Normal':
+        return _currentSpeed > 0.25 && _currentSpeed <= 0.35;
+      case 'Fast':
+        return _currentSpeed > 0.35 && _currentSpeed <= 0.45;
+      case 'Very Fast':
+        return _currentSpeed > 0.45;
+      default:
+        return false;
+    }
   }
 
   @override
@@ -110,27 +135,29 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
             const SizedBox(height: 98), // 197 - 65 - 34 = 98
             // Custom Slider
             SizedBox(
-              width: 295,
+              width: double.infinity,
               child: Column(
                 children: [
                   // Slider with custom styling
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      activeTrackColor: Theme.of(context).brightness == Brightness.dark 
-                          ? Colors.white 
+                      activeTrackColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
                           : const Color(0xFF4D4D4D),
-                      inactiveTrackColor: Theme.of(context).brightness == Brightness.dark 
-                          ? Colors.grey.shade700 
+                      inactiveTrackColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade700
                           : const Color(0xFFE6E6E6),
                       trackHeight: 6,
-                      thumbColor: Theme.of(context).brightness == Brightness.dark 
-                          ? Colors.white 
+                      thumbColor: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
                           : const Color(0xFF4D4D4D),
                       thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
                       overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
-                      overlayColor: (Theme.of(context).brightness == Brightness.dark 
-                          ? Colors.white 
-                          : const Color(0xFF4D4D4D)).withOpacity(0.1),
+                      overlayColor:
+                          (Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : const Color(0xFF4D4D4D))
+                              .withOpacity(0.1),
                       trackShape: const RoundedRectSliderTrackShape(),
                     ),
                     child: Semantics(
@@ -139,8 +166,8 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                       child: Slider(
                         value: _currentSpeed,
                         onChanged: _onSpeedChanged,
-                        min: 0.0,
-                        max: 1.0,
+                        min: 0.1,
+                        max: 0.5,
                       ),
                     ),
                   ),
@@ -235,52 +262,68 @@ class _ReadingSpeedControlScreenState extends State<ReadingSpeedControlScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                Column(
                   children: _speedPresets.entries.map((entry) {
-                    bool isSelected = (_currentSpeed - entry.value).abs() < 0.05;
-                    return Semantics(
-                      label: '${entry.key} reading speed preset',
-                      value: isSelected ? 'Selected' : 'Not selected',
-                      button: true,
-                      onTap: () => _setPresetSpeed(entry.value),
-                      child: GestureDetector(
+                    // 범위 기반으로 선택 상태 결정
+                    bool isSelected = _isInPresetRange(entry.key);
+                    return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Semantics(
+                        label: '${entry.key} reading speed preset',
+                        value: isSelected ? 'Selected' : 'Not selected',
+                        button: true,
                         onTap: () => _setPresetSpeed(entry.value),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: isSelected 
-                                ? (Theme.of(context).brightness == Brightness.dark 
-                                    ? Colors.white 
-                                    : Colors.black)
-                                : (Theme.of(context).brightness == Brightness.dark 
-                                    ? Colors.grey[700] 
-                                    : Colors.grey[200]),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: isSelected 
-                                  ? (Theme.of(context).brightness == Brightness.dark 
-                                      ? Colors.white 
-                                      : Colors.black)
-                                  : (Theme.of(context).brightness == Brightness.dark 
-                                      ? Colors.grey[600]! 
-                                      : Colors.grey[400]!),
-                              width: 1,
+                        child: GestureDetector(
+                          onTap: () => _setPresetSpeed(entry.value),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black)
+                                  : (Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.grey[700]
+                                        : Colors.grey[200]),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected
+                                    ? (Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black)
+                                    : (Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.grey[600]!
+                                          : Colors.grey[400]!),
+                                width: 1,
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            entry.key,
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: isSelected 
-                                  ? (Theme.of(context).brightness == Brightness.dark 
-                                      ? Colors.black 
-                                      : Colors.white)
-                                  : Theme.of(context).textTheme.bodyMedium?.color,
-                              height: 1.21,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  entry.key,
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: isSelected
+                                        ? (Theme.of(context).brightness == Brightness.dark
+                                              ? Colors.black
+                                              : Colors.white)
+                                        : Theme.of(context).textTheme.bodyMedium?.color,
+                                    height: 1.21,
+                                  ),
+                                ),
+                                if (isSelected)
+                                  Icon(
+                                    Icons.check,
+                                    size: 20,
+                                    color: Theme.of(context).brightness == Brightness.dark
+                                        ? Colors.black
+                                        : Colors.white,
+                                  ),
+                              ],
                             ),
                           ),
                         ),

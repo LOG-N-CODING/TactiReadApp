@@ -6,59 +6,22 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 41),
             child: Column(
               children: [
-                // Status Bar
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 21),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        '9:27',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          // 신호, WiFi, 배터리 아이콘들
-                          const SizedBox(
-                            width: 18,
-                            height: 12,
-                            child: Icon(Icons.signal_cellular_4_bar, size: 12),
-                          ),
-                          const SizedBox(width: 2),
-                          const SizedBox(width: 21, height: 15, child: Icon(Icons.wifi, size: 15)),
-                          const SizedBox(width: 2),
-                          const SizedBox(
-                            width: 25,
-                            height: 12,
-                            child: Icon(Icons.battery_std, size: 12),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 // TactiRead 제목
-                const Text(
+                Text(
                   'TactiRead',
                   style: TextStyle(
                     fontSize: 44,
                     fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.titleLarge?.color,
                     height: 1.46,
                   ),
                   textAlign: TextAlign.center,
@@ -66,12 +29,12 @@ class WelcomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 8),
                 // Read Beyond Limits 부제목
-                const Text(
+                Text(
                   'Read Beyond Limits',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w400,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.titleMedium?.color,
                     height: 1.46,
                   ),
                   textAlign: TextAlign.center,
@@ -85,17 +48,17 @@ class WelcomeScreen extends StatelessWidget {
                     width: 286,
                     height: 51,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFB0B0B0)),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      border: Border.all(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Sign In',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           height: 1.46,
                         ),
                       ),
@@ -111,17 +74,17 @@ class WelcomeScreen extends StatelessWidget {
                     width: 286,
                     height: 51,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(color: const Color(0xFFB0B0B0)),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      border: Border.all(color: Theme.of(context).dividerColor),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Text(
                         'Create Account',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w400,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           height: 1.46,
                         ),
                       ),
@@ -130,57 +93,12 @@ class WelcomeScreen extends StatelessWidget {
                 ),
 
                 SizedBox(height: MediaQuery.of(context).size.height * 0.06),
-                // Audio Assistant 토글
-                Column(
-                  children: [
-                    const Text(
-                      'Audio Assistant',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                        height: 1.46,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: 120,
-                      height: 60,
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 120,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(80),
-                            ),
-                          ),
-                          Positioned(
-                            right: 8,
-                            top: 8,
-                            child: Container(
-                              width: 44,
-                              height: 44,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: MediaQuery.of(context).size.height * 0.08),
               ],
             ),
           ),
         ),
+        bottomNavigationBar: BottomNavigationComponent(currentRoute: '/welcome'),
       ),
-      bottomNavigationBar: const BottomNavigationComponent(currentRoute: '/welcome'),
     );
   }
 }

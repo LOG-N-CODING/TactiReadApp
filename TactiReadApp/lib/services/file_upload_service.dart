@@ -23,7 +23,7 @@ class FileUploadService {
       // 현재 사용자 확인
       final currentUser = await UserSessionService.getCurrentUser();
       if (currentUser == null) {
-        return FileUploadResult(success: false, message: '로그인이 필요합니다.');
+        return FileUploadResult(success: false, message: 'Login required.');
       }
 
       // 파일 선택
@@ -34,20 +34,20 @@ class FileUploadService {
       );
 
       if (result == null || result.files.isEmpty) {
-        return FileUploadResult(success: false, message: '파일이 선택되지 않았습니다.');
+        return FileUploadResult(success: false, message: 'No file selected.');
       }
 
       PlatformFile file = result.files.first;
 
       // 파일 크기 확인 (최대 50MB)
       if (file.size > 50 * 1024 * 1024) {
-        return FileUploadResult(success: false, message: '파일 크기가 50MB를 초과합니다.');
+        return FileUploadResult(success: false, message: 'File size exceeds 50MB.');
       }
 
       // 파일 확장자 확인
       String fileExtension = path.extension(file.name).toLowerCase().replaceAll('.', '');
       if (!supportedExtensions.contains(fileExtension)) {
-        return FileUploadResult(success: false, message: '지원하지 않는 파일 형식입니다.');
+        return FileUploadResult(success: false, message: 'Unsupported file type.');
       }
 
       // 앱 문서 디렉토리 가져오기
@@ -74,7 +74,7 @@ class FileUploadService {
         File targetFile = File(filePath);
         await targetFile.writeAsBytes(file.bytes!);
       } else {
-        return FileUploadResult(success: false, message: '파일 데이터를 읽을 수 없습니다.');
+        return FileUploadResult(success: false, message: 'Unable to read file data.');
       }
 
       // 데이터베이스에 문서 정보 저장
@@ -92,16 +92,16 @@ class FileUploadService {
       if (documentId > 0) {
         return FileUploadResult(
           success: true,
-          message: '파일이 성공적으로 업로드되었습니다.',
+          message: 'File uploaded successfully.',
           document: document.copyWith(id: documentId),
         );
       } else {
         // 업로드된 파일 삭제 (DB 저장 실패 시)
         File(filePath).deleteSync();
-        return FileUploadResult(success: false, message: '파일 정보 저장 중 오류가 발생했습니다.');
+        return FileUploadResult(success: false, message: 'Error occurred while saving file information.');
       }
     } catch (e) {
-      return FileUploadResult(success: false, message: '파일 업로드 중 오류가 발생했습니다: ${e.toString()}');
+      return FileUploadResult(success: false, message: 'Error occurred while uploading file: ${e.toString()}');
     }
   }
 

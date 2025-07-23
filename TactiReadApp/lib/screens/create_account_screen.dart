@@ -33,23 +33,26 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         _emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty ||
         _confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('모든 필드를 입력해주세요.'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields.'), backgroundColor: Colors.red),
+      );
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('비밀번호가 일치하지 않습니다.'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Passwords do not match.'), backgroundColor: Colors.red),
       );
       return;
     }
 
     if (!_agreeToTerms) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('이용약관에 동의해주세요.'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please agree to the terms of service.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -91,7 +94,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('회원가입 중 오류가 발생했습니다.'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('An error occurred during sign up.'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -100,12 +106,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).iconTheme.color),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -117,12 +123,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             children: [
               const SizedBox(height: 20),
               // Title
-              const Text(
+              Text(
                 'Create Account',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
                   fontFamily: 'Inter',
                 ),
               ),
@@ -132,17 +138,29 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFB0B0B0)),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[600]!
+                        : const Color(0xFFB0B0B0),
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                  decoration: InputDecoration(
                     hintText: 'Enter your full name',
-                    hintStyle: TextStyle(color: Color(0xFF999999), fontSize: 16),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400]
+                          : const Color(0xFF999999),
+                      fontSize: 16,
+                    ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
               ),
@@ -152,18 +170,30 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFB0B0B0)),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[600]!
+                        : const Color(0xFFB0B0B0),
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
+                  decoration: InputDecoration(
                     hintText: 'Enter your email',
-                    hintStyle: TextStyle(color: Color(0xFF999999), fontSize: 16),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400]
+                          : const Color(0xFF999999),
+                      fontSize: 16,
+                    ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                 ),
               ),
@@ -173,22 +203,36 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFB0B0B0)),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[600]!
+                        : const Color(0xFFB0B0B0),
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                   decoration: InputDecoration(
                     hintText: 'Create a password',
-                    hintStyle: const TextStyle(color: Color(0xFF999999), fontSize: 16),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400]
+                          : const Color(0xFF999999),
+                      fontSize: 16,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF999999),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : const Color(0xFF999999),
                       ),
                       onPressed: () {
                         setState(() {
@@ -205,22 +249,36 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
               Container(
                 height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFB0B0B0)),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[600]!
+                        : const Color(0xFFB0B0B0),
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
                   controller: _confirmPasswordController,
                   obscureText: !_isConfirmPasswordVisible,
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                   decoration: InputDecoration(
                     hintText: 'Confirm your password',
-                    hintStyle: const TextStyle(color: Color(0xFF999999), fontSize: 16),
+                    hintStyle: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey[400]
+                          : const Color(0xFF999999),
+                      fontSize: 16,
+                    ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                        color: const Color(0xFF999999),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]
+                            : const Color(0xFF999999),
                       ),
                       onPressed: () {
                         setState(() {
@@ -248,7 +306,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         });
                       },
                       activeColor: const Color(0xFF3366CC),
-                      side: const BorderSide(color: Color(0xFFB0B0B0)),
+                      side: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[400]!
+                            : const Color(0xFFB0B0B0),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -260,14 +322,16 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         });
                       },
                       child: RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           text: 'I agree to the ',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF666666),
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? Colors.grey[300]
+                                : const Color(0xFF666666),
                             fontFamily: 'Inter',
                           ),
-                          children: [
+                          children: const [
                             TextSpan(
                               text: 'Terms and Conditions',
                               style: TextStyle(
@@ -299,18 +363,26 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _createAccount,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+                    foregroundColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.black
+                        : Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
                           ),
                         )
                       : const Text(
@@ -330,10 +402,16 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                 child: GestureDetector(
                   onTap: () => Navigator.pushReplacementNamed(context, '/sign_in'),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: 'Already have an account? ',
-                      style: TextStyle(fontSize: 14, color: Color(0xFF666666), fontFamily: 'Inter'),
-                      children: [
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey[300]
+                            : const Color(0xFF666666),
+                        fontFamily: 'Inter',
+                      ),
+                      children: const [
                         TextSpan(
                           text: 'Sign In',
                           style: TextStyle(color: Color(0xFF3366CC), fontWeight: FontWeight.w500),

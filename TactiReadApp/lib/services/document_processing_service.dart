@@ -31,7 +31,7 @@ class DocumentProcessingService {
       document.dispose();
       return extractedText.trim();
     } catch (e) {
-      throw Exception('PDF 텍스트 추출 실패: $e');
+      throw Exception('Failed to extract text from PDF: $e');
     }
   }
 
@@ -55,7 +55,7 @@ class DocumentProcessingService {
       await textRecognizer.close();
       return extractedText.trim();
     } catch (e) {
-      throw Exception('이미지 텍스트 추출 실패: $e');
+      throw Exception('Failed to extract text from image: $e');
     }
   } // PDF를 이미지로 변환한 후 픽셀 데이터 생성
 
@@ -80,7 +80,7 @@ class DocumentProcessingService {
       document.dispose();
       return allPixelData;
     } catch (e) {
-      throw Exception('PDF 픽셀 변환 실패: $e');
+      throw Exception('Failed to convert PDF to pixel data: $e');
     }
   }
 
@@ -92,12 +92,12 @@ class DocumentProcessingService {
       final img.Image? image = img.decodeImage(bytes);
 
       if (image == null) {
-        throw Exception('이미지 디코딩 실패');
+        throw Exception('Failed to decode image');
       }
 
       return _convertImageToPixelData(image);
     } catch (e) {
-      throw Exception('이미지 픽셀 변환 실패: $e');
+      throw Exception('Failed to convert image to pixel data: $e');
     }
   }
 

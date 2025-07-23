@@ -83,7 +83,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             // 앱 설명
             const Text(
-              '점자 디스플레이를 위한 스마트 리더',
+              'Smart reader for braille displays',
               style: TextStyle(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 48),
@@ -94,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 16),
 
-            const Text('초기화 중...', style: TextStyle(fontSize: 14, color: Colors.white70)),
+            const Text('Initializing...', style: TextStyle(fontSize: 14, color: Colors.white70)),
           ],
         ),
       ),
